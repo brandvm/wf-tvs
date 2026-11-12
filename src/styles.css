@@ -285,6 +285,18 @@ svg {
   display: contents;
 }
 
+/* repo-css: override-webflow — hide the "Made in Webflow" badge (the
+   person's request, 2026-11-12; GOTCHAS). Webflow styles it with
+   `.w-webflow-badge { display: inline-block !important; visibility: visible
+   !important; … }`, a single class, so `!important` alone ties and the
+   later Webflow sheet can win: `html body` raises the specificity. */
+html body .w-webflow-badge {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 /* ============================================================
    04. DOCUMENT STATE
    ============================================================ */

@@ -27,6 +27,15 @@ collected from client repos into those files.
 
 <!-- Add new entries here, newest first. -->
 
+### 2026-11-12 · "Made in Webflow" badge hidden from the repo CSS
+- Area: css
+- Scope: project
+- Symptom: the badge showed on staging (wf-tvs.webflow.io); a plain `.w-webflow-badge { display: none !important }` doesn't reliably win.
+- Cause: Webflow's published CSS styles `.w-webflow-badge` with `display`, `visibility`, `opacity` and `z-index` all `!important` on a single class.
+- Fix: `html body .w-webflow-badge { display: none !important; … }` in `src/styles.css` §03 (`override-webflow`, asked for by the person). Before launch, prefer turning the badge off in Site settings (paid site plan), then this rule can go.
+- Status: fixed (verify on staging after deploy)
+- Found by: human + claude
+
 ### 2026-11-12 · Repo CSS reads Webflow variable names (approved)
 - Area: css
 - Scope: project

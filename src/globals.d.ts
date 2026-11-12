@@ -20,6 +20,5 @@ declare global {
       // Set before script execution, including when a fallback URL is used.
       source?: string;
     };
-    Webflow?: { env?: (mode: string) => boolean };
   }
 }

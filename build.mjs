@@ -26,6 +26,10 @@ const config = {
   // content hash in the name so a new version is never served from cache.
   loader: { '.woff2': 'file' },
   assetNames: 'fonts/[name]-[hash]',
+  // Remix Icon's stylesheet lists five font formats; only its woff2 is
+  // bundled. The others stay as unresolved URLs (no current browser picks
+  // them over woff2), so dist/ doesn't carry 4 MB of unused fonts.
+  external: ['remixicon.eot*', 'remixicon.woff?*', 'remixicon.ttf*', 'remixicon.svg*'],
   minify: !dev,
   sourcemap: dev,
   // dist/ is committed and CI fails if it drifts from src/. Dev builds stay

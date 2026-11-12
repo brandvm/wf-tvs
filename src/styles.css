@@ -40,6 +40,12 @@
    file and chooses the weights. */
 @import "./phosphor.css";
 
+/* repo-css: third-party — Remix Icon 4.9.1 (package `remixicon`, Remix Icon
+   License 1.0), the icon set the Figma layers use: an icon is
+   <i class="ri-<name>">. Only the woff2 is bundled (build.mjs keeps the
+   other formats external; no current browser requests them). */
+@import "remixicon/fonts/remixicon.css";
+
 /* ============================================================
    01. TOKENS
    ============================================================ */
@@ -99,7 +105,7 @@
    a body font-size in the Designer: this rule wins and the Designer value
    would be a hidden no-op. */
 :root {
-  --size-container-ideal: 1680;
+  --size-container-ideal: 1440;
   --size-container-min: 1440px;
   --size-container-max: 1680px;
   --size-container: clamp(var(--size-container-min), 100vw, var(--size-container-max));
@@ -454,6 +460,417 @@ html.is-loading {
    §03 — that is where the rest of the Rich Text patching sits, and its
    versions also cover the wrapper div Webflow sometimes nests. */
 
+/* ------------------------------------------------------------
+   TVS — ported from the prototype (prototype/src/css/repo.css and the
+   repo-css / js-state rules of new-classes*.css). The plain single-class
+   rules are Webflow classes and live in the Designer. These read the
+   site's Webflow variables (`--_…`) as the prototype does: rename a
+   variable in Webflow and check these rules.
+   ------------------------------------------------------------ */
+
+/* repo-css: third-party — Lenis (smooth scrolling, module smooth-scroll), its own stylesheet. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+
+.lenis [data-lenis-prevent],
+.lenis [data-lenis-prevent-wheel],
+.lenis [data-lenis-prevent-touch] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+.lenis.lenis-autoToggle {
+  transition-property: overflow;
+  transition-duration: 1ms;
+  transition-behavior: allow-discrete;
+}
+
+/* repo-css: designer-cant — the popover reset ([popover] attribute selector):
+   top-layer panels are placed by script (modules popover, select, date-picker). */
+.select-list[popover],
+.datepicker[popover] {
+  position: fixed;
+  inset: auto;
+}
+
+/* repo-css: designer-cant — :disabled has no state in the Designer. */
+.form-input:disabled {
+  background-color: var(--_colors-semantic---background--surface, #f9f9fb);
+  opacity: var(--_effects---disabled-opacity, .4);
+  cursor: not-allowed;
+}
+
+.form-check-input:disabled,
+.datepicker-day:disabled,
+.slider-button:disabled {
+  opacity: var(--_effects---disabled-opacity, .4);
+  cursor: not-allowed;
+}
+
+/* repo-css: js-state — descendants of classes the modules toggle (select,
+   nav, accordion); the Designer can't style a child by its parent's combo class. */
+.select-toggle.is-open .select-icon {
+  transform: rotate(180deg);
+}
+
+.nav-link.is-open .nav-link-icon {
+  transform: rotate(180deg);
+}
+
+.faq-item.is-open .faq-toggle {
+  background-color: var(--_colors---brand--ink, #080829);
+  color: var(--_colors---brand--paper, #fff);
+}
+
+.faq-item.is-open .faq-toggle-icon {
+  transform: rotate(45deg);
+}
+
+.button-icon.is-well .icon-glyph {
+  font-size: var(--_typography-scale---size--20, 1.25em);
+  line-height: 1;
+}
+
+@media screen and (max-width: 991px) {
+  .nav-toggle.is-open .nav-toggle-icon {
+    display: none;
+  }
+
+  .nav-toggle.is-open .nav-toggle-icon.is-close {
+    display: block;
+  }
+}
+
+/* repo-css: designer-cant — descendant selectors: a child styled by its
+   parent's hover/active state or by where it sits. */
+.faq-question:hover .faq-question-text {
+  color: var(--_colors---brand--accent, #1c1ce6);
+}
+
+.faq-question:active .faq-toggle {
+  background-color: var(--_colors---blue-tint--blue-16, #dde2fc);
+}
+
+.blog-card:hover .blog-card-image {
+  transform: scale(1.02);
+}
+
+.blog-card:active .blog-card-image {
+  transform: scale(0.99);
+}
+
+.blog-card:hover .blog-card-title {
+  color: var(--_colors---brand--accent, #1c1ce6);
+}
+
+.phone-row:hover .phone-row-number {
+  color: var(--_colors-semantic---link--hover, #1c1ce6);
+}
+
+.nav-clinics .nav-callout {
+  border-radius: var(--_radius---20, 1.25em);
+}
+
+.call-card-actions .button {
+  flex: 1 1 0;
+}
+
+.call-card-actions .button-color,
+.call-card-actions .button-size {
+  width: 100%;
+}
+
+/* The Navigation page (/design/navigation) lays every nav part out open. */
+.nav-stage .topbar,
+.nav-stage .nav-bar {
+  padding-right: var(--_spacing---40, 2.5em);
+  padding-left: var(--_spacing---40, 2.5em);
+}
+
+@media screen and (max-width: 991px) {
+  .nav-stage .nav-sheet {
+    position: static;
+    display: flex;
+    max-height: none;
+    padding: var(--_spacing---16, 1em) 0 0;
+    border-top-width: 0;
+    box-shadow: none;
+  }
+
+  .nav-stage .nav-toggle {
+    display: none;
+  }
+
+  .nav-stage .nav-bar {
+    height: auto;
+    padding-top: var(--_spacing---16, 1em);
+    padding-bottom: var(--_spacing---16, 1em);
+  }
+
+  .nav-stage .nav-inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .nav-stage .nav-sub {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: var(--_spacing---12, .75em);
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .home-hero-actions .button-color,
+  .home-hero-actions .button-size,
+  .services-banner-actions .button-color,
+  .services-banner-actions .button-size {
+    width: 100%;
+  }
+}
+
+/* repo-css: designer-cant — -webkit-backdrop-filter and mask-image. The proof
+   pill's blur for Safari; the hero's progressive blur: the photo blurs
+   gradually towards the bottom, under the copy, as in Figma. */
+.proof-pill {
+  -webkit-backdrop-filter: blur(var(--_effects---blur--strong, 2.25em));
+}
+
+.home-hero-blur {
+  -webkit-backdrop-filter: blur(var(--_effects---blur--medium, .875em));
+  backdrop-filter: blur(var(--_effects---blur--medium, .875em));
+  -webkit-mask-image: linear-gradient(180deg, transparent 38%, black 80%);
+  mask-image: linear-gradient(180deg, transparent 38%, black 80%);
+  background-color: transparent;
+}
+
+/* repo-css: designer-cant — scroll snap, the hidden scrollbar
+   (::-webkit-scrollbar) and line clamps. The reviews row snaps card by card
+   (module slider moves it); a review stops at four lines, blog card titles
+   and excerpts at two. */
+.review-track {
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+
+.review-track::-webkit-scrollbar {
+  display: none;
+}
+
+.review-card-text {
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+.blog-card-title,
+.blog-card-excerpt {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+/* repo-css: designer-cant — ::backdrop. The page behind the call chooser
+   (module call-chooser) dims and softens. */
+.call-chooser::backdrop {
+  background-color: var(--_colors---ink-tint--ink-48, #0808297a);
+  -webkit-backdrop-filter: blur(var(--_effects---blur--light, .25em));
+  backdrop-filter: blur(var(--_effects---blur--light, .25em));
+}
+
+/* repo-css: designer-cant — @keyframes, color-mix() and a reduced-motion
+   query. Every phone well (the Call button, the phone rows in the nav
+   callout and the CTA) comes alive on hover and keyboard focus: the phone
+   shakes once and a ring ripples out. Off for reduced motion. */
+@keyframes phone-shake {
+  0%,
+  100% { transform: rotate(0deg); }
+  15% { transform: rotate(-14deg); }
+  30% { transform: rotate(11deg); }
+  45% { transform: rotate(-8deg); }
+  60% { transform: rotate(6deg); }
+  75% { transform: rotate(-3deg); }
+}
+
+@keyframes phone-ripple {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--_colors---brand--yellow, #ffdd21) 60%, transparent); }
+  100% { box-shadow: 0 0 0 var(--_spacing---12, .75em) color-mix(in srgb, var(--_colors---brand--yellow, #ffdd21) 0%, transparent); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .phone-row:hover .phone-well,
+  .phone-row:focus-visible .phone-well,
+  .button:hover .button-icon.is-well,
+  .button:focus-visible .button-icon.is-well {
+    animation: phone-ripple 1.1s ease-out infinite;
+  }
+
+  .phone-row:hover .phone-well-icon,
+  .phone-row:focus-visible .phone-well-icon,
+  .button:hover .button-icon.is-well .icon-glyph,
+  .button:focus-visible .button-icon.is-well .icon-glyph {
+    animation: phone-shake 0.7s ease-in-out;
+    transform-origin: 50% 50%;
+  }
+}
+
+/* ------------------------------------------------------------
+   Style guide documentation pages (design › style-guide)
+   repo-css: designer-cant — the docs frame's descendant rules (an Sg row
+   laid out differently inside an Sgd article), the 1279px step (not a
+   Webflow breakpoint), `contain`, and the Current-state icon colour.
+   Source: prototype/src/css/style-guide-docs.css, style-guide.css.
+   ------------------------------------------------------------ */
+.sg-preview, .sg-tile-box { contain: strict; }
+.sgd-side-link.w--current .sgd-side-icon { color: inherit; }
+.sgd-article .sg-row { flex-direction: column; gap: 0.875em; padding: 1.75em 0 0.5em; border-top-width: 0; scroll-margin-top: 5em; }
+.sgd-article .sg-row-meta { position: static; flex: none; flex-direction: column; align-items: flex-start; gap: 0.375em; }
+.sgd-article .sg-row-name { font-size: 1.125em; font-weight: 600; letter-spacing: -0.01em; }
+.sgd-article .sg-row-note { max-width: 46em; font-family: var(--_typography-scale---family--body, "Instrument Sans", sans-serif); font-size: 0.9375em; line-height: 1.6; opacity: 1; color: var(--_colors---neutral--slate, #6b6b7f); }
+.sgd-article .sg-row-demo { align-self: stretch; flex: none; }
+.sgd-article .sg-swatch { flex: 1 1 9.5em; max-width: 12.5em; }
+@media screen and (max-width: 1279px) {
+  .sgd-side { flex-basis: 14em; padding-left: 1.5em; }
+  .sgd-main { gap: 2.5em; padding-right: 2em; padding-left: 2em; }
+  .sgd-toc { flex-basis: 11em; }
+}
+.sgd-matrix.is-dark .sgd-matrix-label { color: var(--_colors---paper-tint--paper-64, #ffffffa3); }
+.sgd-matrix-row.is-head .sgd-matrix-key, .sgd-matrix-row.is-head .sgd-matrix-cell { padding-top: 0.875em; padding-bottom: 0.875em; border-top-width: 0; background-color: var(--_colors---neutral--mist, #f9f9fb); font-size: 0.6875em; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+.sgd-matrix.is-dark .sgd-matrix-key, .sgd-matrix.is-dark .sgd-matrix-cell { border-top-color: var(--_colors---paper-tint--paper-12, #ffffff1f); }
+.sgd-matrix.is-dark .sgd-matrix-row.is-head .sgd-matrix-key, .sgd-matrix.is-dark .sgd-matrix-row.is-head .sgd-matrix-cell { background-color: var(--_colors---paper-tint--paper-12, #ffffff1f); }
+@media screen and (max-width: 1279px) {
+  .sgd-matrix { display: flex; flex-direction: column; }
+  .sgd-matrix-row { display: flex; flex-wrap: wrap; padding: 0.5em 0.5em 1em; border-top: 1px solid var(--_colors---ink-tint--ink-12, #0808291f); }
+  .sgd-matrix-row.is-head { display: none; }
+  .sgd-matrix-row:nth-child(2) { border-top-width: 0; }
+  .sgd-matrix.is-dark .sgd-matrix-row { border-top-color: var(--_colors---paper-tint--paper-12, #ffffff1f); }
+  .sgd-matrix-key { flex: 0 0 100%; padding: 0.75em 0.75em 0.25em; border-top-width: 0; font-size: 0.9375em; font-weight: 600; }
+  .sgd-matrix-cell { flex: 1 1 9.5em; align-items: flex-start; justify-content: flex-start; padding: 0.75em; border-top-width: 0; }
+  .sgd-matrix-cell.is-wide { flex-basis: 13em; }
+  .sgd-matrix-label { display: block; }
+}
+.sgd-article .sg-table-key { flex: 0 0 11em; min-width: 0; }
+.sgd-article .sg-table-cell { flex: 1 1 0; min-width: 9em; }
+.sgd-article .sg-demo { padding: 1.5em; }
+@media screen and (max-width: 767px) {
+  .sgd-article .sg-table-key { flex-basis: 8em; }
+}
+.sgd-matrix-cell .button-content { white-space: nowrap; }
+
+/* repo-css: designer-cant — states shown at rest in the documentation:
+   every hover / focus / active / disabled rule repeated under a
+   .sgd-force-<state> wrapper (descendant selectors). The wrapper classes
+   exist in Webflow (Sgd Force Hover/Focus/Active/Disabled, no styles) only
+   so imported markup keeps them. Generated in the prototype
+   (style-guide-states.css); copy it again when that file changes. */
+.sgd-force-focus .skip-link {
+  top: var(--_spacing---16, 1em);
+}
+.sgd-force-focus .button {
+  outline-color: var(--_colors-semantic---form--focus, #1c1ce6);
+  outline-offset: 3px;
+  outline-style: solid;
+  outline-width: 0.125em;
+  border-top-left-radius: var(--_radius---pill, 999em);
+  border-top-right-radius: var(--_radius---pill, 999em);
+  border-bottom-left-radius: var(--_radius---pill, 999em);
+  border-bottom-right-radius: var(--_radius---pill, 999em);
+}
+.sgd-force-active .button-color {
+  box-shadow: inset 0 0 0 100em rgba(0, 0, 0, 0.16);
+}
+.sgd-force-hover .button-color {
+  background-color: var(--_colors-semantic---button--background-hover, #080829);
+}
+.sgd-force-hover .button-color:where(.w-variant-e13de0db-430f-b667-aee3-d545b7e6faea) {
+  background-color: var(--_colors-semantic---background--surface, #f9f9fb);
+}
+.sgd-force-active .icon-button-box {
+  box-shadow: inset 0 0 0 100em rgba(0, 0, 0, 0.16);
+}
+.sgd-force-hover .icon-button-box {
+  background-color: var(--_colors-semantic---button--background-hover, #080829);
+}
+.sgd-force-hover .icon-button-box:where(.w-variant-dfb6235f-76ea-8fb6-7df7-17486e2c7d7c) {
+  background-color: var(--_colors-semantic---background--surface, #f9f9fb);
+}
+.sgd-force-focus .form-input {
+  border-top-color: var(--_colors-semantic---border--subtle, #0808291f);
+  border-right-color: var(--_colors-semantic---border--subtle, #0808291f);
+  border-bottom-color: var(--_colors-semantic---border--subtle, #0808291f);
+  border-left-color: var(--_colors-semantic---border--subtle, #0808291f);
+}
+.sgd-force-focus .form-input {
+  outline-color: var(--_colors-semantic---form--focus, #1c1ce6);
+  outline-offset: 3px;
+  outline-style: solid;
+  outline-width: 0.125em;
+}
+.sgd-force-hover .clinic-fact.is-link { color: var(--_colors---brand--accent, #1c1ce6); }
+.sgd-force-hover .slider-button { background-color: var(--_colors-semantic---text--primary, #080829); color: var(--_colors-semantic---background--page, #fff); }
+.sgd-force-active .slider-button { opacity: var(--_effects---disabled-opacity, .4); }
+.sgd-force-disabled .slider-button { opacity: var(--_effects---disabled-opacity, .4); cursor: not-allowed; }
+.sgd-force-hover .faq-question .faq-question-text { color: var(--_colors---brand--accent, #1c1ce6); }
+.sgd-force-active .faq-question .faq-toggle { background-color: var(--_colors---blue-tint--blue-16, #dde2fc); }
+.sgd-force-hover .blog-card .blog-card-image { transform: scale(1.02); }
+.sgd-force-active .blog-card .blog-card-image { transform: scale(0.99); }
+.sgd-force-hover .blog-card .blog-card-title { color: var(--_colors---brand--accent, #1c1ce6); }
+.sgd-force-hover a.location-info-row { color: var(--_colors---brand--accent, #1c1ce6); }
+.sgd-force-hover .location-video-play { transform: scale(1.06); }
+.sgd-force-active .location-video-play { transform: scale(0.96); }
+.sgd-force-hover .form-submit { background-color: var(--_colors---brand--ink, #080829); }
+.sgd-force-active .form-submit { background-color: var(--_colors---ink-tint--ink-90, #080829e6); }
+.sgd-force-hover .breadcrumb-link { color: var(--_colors---brand--ink, #080829); }
+.sgd-force-active .breadcrumb-link { color: var(--_colors---ink-tint--ink-64, #080829a3); }
+.sgd-force-hover .phone-card { box-shadow: 0 0 0 var(--_spacing---hairline, .0625em) var(--_colors---ink-tint--ink-24, #0808293d); }
+.sgd-force-active .phone-card { box-shadow: 0 0 0 var(--_spacing---2, .125em) var(--_colors---ink-tint--ink-24, #0808293d); }
+.sgd-force-hover .help-item-body a { color: var(--_colors---brand--ink, #080829); }
+@media (prefers-reduced-motion: no-preference) {
+.sgd-force-hover .phone-card .phone-well, .sgd-force-focus .phone-card .phone-well { animation: phone-ripple 1.1s ease-out infinite; }
+.sgd-force-hover .phone-card .phone-well-icon, .sgd-force-focus .phone-card .phone-well-icon { animation: phone-shake 0.7s ease-in-out; transform-origin: 50% 50%; }
+}
+.sgd-force-hover .topbar-phone { color: var(--_colors---brand--yellow, #ffdd21); }
+.sgd-force-hover .nav-link { color: var(--_colors---brand--accent, #1c1ce6); }
+.sgd-force-active .nav-link { color: var(--_colors---ink-tint--ink-64, #080829a3); }
+.sgd-force-hover .nav-clinic { border-color: var(--_colors---brand--accent, #1c1ce6); }
+.sgd-force-hover .nav-service { background-color: var(--_colors---blue-tint--blue-8, #eef0fe); }
+.sgd-force-hover .phone-row .phone-row-number { color: var(--_colors-semantic---link--hover, #1c1ce6); }
+.sgd-force-hover .call-chooser-close { background-color: var(--_colors---neutral--mist, #f9f9fb); }
+.sgd-force-active .call-chooser-close { background-color: var(--_colors---blue-tint--blue-16, #dde2fc); }
+.sgd-force-hover .call-card-number { color: var(--_colors---brand--accent, #1c1ce6); }
+.sgd-force-hover .footer-link { color: var(--_colors---brand--yellow, #ffdd21); }
+.sgd-force-hover .footer-credit-link { color: var(--_colors---brand--yellow, #ffdd21); }
+@media (prefers-reduced-motion: no-preference) {
+.sgd-force-hover .phone-row .phone-well, .sgd-force-focus .phone-row .phone-well, .sgd-force-hover .button .button-icon.is-well, .sgd-force-focus .button .button-icon.is-well { animation: phone-ripple 1.1s ease-out infinite; }
+.sgd-force-hover .phone-row .phone-well-icon, .sgd-force-focus .phone-row .phone-well-icon, .sgd-force-hover .button .button-icon.is-well .icon-glyph, .sgd-force-focus .button .button-icon.is-well .icon-glyph { animation: phone-shake 0.7s ease-in-out; transform-origin: 50% 50%; }
+}
+.sgd-force-hover .button-color.is-light { background-color: var(--_colors---blue-tint--blue-8, #eef0fe); }
+.sgd-force-hover .button-color.is-call { border-color: var(--_colors-semantic---text--primary, #080829); background-color: var(--_colors-semantic---text--primary, #080829); color: var(--_colors-semantic---background--page, #fff); }
+.sgd-force-disabled .form-input { background-color: var(--_colors-semantic---background--surface, #f9f9fb); opacity: var(--_effects---disabled-opacity, .4); cursor: not-allowed; }
+.sgd-force-focus .form-check-input { outline-color: var(--_colors-semantic---form--focus, #1c1ce6); outline-offset: var(--_spacing---4, .25em); outline-style: solid; outline-width: var(--_spacing---2, .125em); }
+.sgd-force-disabled .form-check-input { opacity: var(--_effects---disabled-opacity, .4); cursor: not-allowed; }
+.sgd-force-active .select-toggle { background-color: var(--_colors-semantic---background--surface, #f9f9fb); }
+.sgd-force-hover .datepicker-nav { background-color: var(--_colors---neutral--mist, #f9f9fb); }
+.sgd-force-active .datepicker-nav { background-color: var(--_colors---blue-tint--blue-16, #dde2fc); }
+.sgd-force-hover .datepicker-day { background-color: var(--_colors---neutral--mist, #f9f9fb); }
+.sgd-force-active .datepicker-day { background-color: var(--_colors---blue-tint--blue-16, #dde2fc); }
+.sgd-force-disabled .datepicker-day { opacity: var(--_effects---disabled-opacity, .4); cursor: not-allowed; }
+.sgd-force-focus .is-keyboard .form-input { outline: var(--_spacing---2, .125em) solid var(--_colors-semantic---form--focus, #1c1ce6); outline-offset: var(--_spacing---4, .25em); }
+.sgd-force-focus .form-input { border-top-color: var(--_colors-semantic---text--primary, #080829); border-right-color: var(--_colors-semantic---text--primary, #080829); border-bottom-color: var(--_colors-semantic---text--primary, #080829); border-left-color: var(--_colors-semantic---text--primary, #080829); }
+.sgd-force-focus .form-input { outline-style: none; }
+.sgd-force-hover .button-color:where(.w-variant-e13de0db-430f-b667-aee3-d545b7e6faea) { background-color: var(--_colors-semantic---text--primary, #080829); color: var(--_colors-semantic---background--page, #fff); border-top-color: var(--_colors-semantic---text--primary, #080829); border-right-color: var(--_colors-semantic---text--primary, #080829); border-bottom-color: var(--_colors-semantic---text--primary, #080829); border-left-color: var(--_colors-semantic---text--primary, #080829); }
+
 /* ============================================================
    06. UTILITIES
    ============================================================ */
@@ -628,6 +1045,14 @@ html.is-loading {
 :focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
+}
+
+/* repo-css: js-state — the keyboard focus ring on fields (TVS). Text fields
+   match :focus-visible however they are focused, so the ring shows only
+   while module focus-modality has set .is-keyboard on <html>. */
+.is-keyboard .form-input:focus {
+  outline: var(--_spacing---2, .125em) solid var(--_colors-semantic---form--focus, #1c1ce6);
+  outline-offset: var(--_spacing---4, .25em);
 }
 
 @media (prefers-reduced-motion: reduce) {

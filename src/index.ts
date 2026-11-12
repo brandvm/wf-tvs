@@ -5,6 +5,20 @@ import { initAriaRoles } from './modules/aria-roles';
 import { initEnvironmentSwitcher } from './modules/environment-switcher';
 import { initPlaceholders } from './modules/placeholders';
 import { initUniqueFormIds } from './modules/unique-form-ids';
+import { initStyleGuideNav } from './modules/style-guide-nav';
+import { initFocusModality } from './modules/focus-modality';
+import { initSelect } from './modules/select';
+import { initDatePicker } from './modules/date-picker';
+import { initNav } from './modules/nav';
+import { initDraggableMarquee } from './modules/draggable-marquee';
+import { initMarqueeClip } from './modules/marquee-clip';
+import { initSmoothScroll } from './modules/smooth-scroll';
+import { initCallChooser } from './modules/call-chooser';
+import { initParallax } from './modules/parallax';
+import { initReveal } from './modules/reveal';
+import { initInteractiveCollage } from './modules/interactive-collage';
+import { initAccordion } from './modules/accordion';
+import { initSlider } from './modules/slider';
 
 // Each module runs in isolation: one that throws is logged and skipped,
 // and every module after it still initializes.
@@ -28,6 +42,24 @@ function boot() {
   run('aria-roles', initAriaRoles);
   run('placeholders', initPlaceholders);
   run('unique-form-ids', initUniqueFormIds);
+  // Project features, in the prototype's order (prototype/src/main.ts).
+  run('year', () => document.querySelectorAll('[data-year]').forEach((el) => (el.textContent = String(new Date().getFullYear()))));
+  run('focus-modality', initFocusModality);
+  run('select', initSelect);
+  run('date-picker', initDatePicker);
+  run('nav', initNav);
+  run('draggable-marquee', initDraggableMarquee);
+  run('marquee-clip', initMarqueeClip);
+  run('smooth-scroll', initSmoothScroll);
+  run('call-chooser', initCallChooser);
+  run('parallax', initParallax);
+  run('reveal', initReveal);
+  // cms-color is not ported: it stood in for the CMS binding of the
+  // wrapper's text colour to the item's Service colour field.
+  run('interactive-collage', initInteractiveCollage);
+  run('accordion', initAccordion);
+  run('slider', initSlider);
+  run('style-guide-nav', initStyleGuideNav);
   // Add project feature initializers here: run('<name>', init<Name>);
 }
 

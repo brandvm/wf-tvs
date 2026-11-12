@@ -1094,6 +1094,19 @@ html.lenis body {
 
 /* repo-css: canvas-preview — Designer canvas and editor escape hatches */
 
+/* Remix icons on the canvas. An icon is an empty <i> whose glyph is a
+   ::before, so the canvas marks it .wf-empty: 75px padding (bottom/right),
+   font-size 0, line-height 0 and a dashed outline — a big empty box with a
+   squashed glyph. Undo that for icons only; published pages never have
+   .wf-empty, so nothing changes for visitors. Covers icons with no Webflow
+   class (breadcrumb arrow, note icon, the Icons page) as well. */
+html.wf-design-mode i.wf-empty[class*="ri-"] {
+  padding: 0 !important;
+  font-size: inherit !important;
+  line-height: 1 !important;
+  outline: none !important;
+}
+
 /* Optional class for code-only embeds that should occupy no layout space. */
 .g-embed-code {
   display: none !important;

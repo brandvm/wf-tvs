@@ -27,6 +27,24 @@ collected from client repos into those files.
 
 <!-- Add new entries here, newest first. -->
 
+### 2026-11-12 · Nested variant props: link in the Designer, set by API
+- Area: mcp
+- Scope: template-candidate
+- Symptom: C | Button's Color/Size had to be chosen per instance, but the nested Button Color / Button Size `Variant` props were not linked to any parent prop, so the API saw nothing to set. `create_prop` has no `variant` type.
+- Cause: linking a nested instance's Variant to a new parent prop is Designer-only (purple dot left of Variant › New Variant property). A prop made on the middle layer (Button Color › Size) shows up on the outer component's nested instance, where it is linked again (C | Button › Size).
+- Fix: link in the Designer, then `set_component_instance_prop_values` with `type: "string"`, `string_value: <variant id>` (or `base`). Done for C | Button (Color `a86542c6…`, Size `06aa6257…`). Also: double-clicking a component in the Components panel inserts an instance into the open page; use the hover "Open component" button instead (one stray Button Color was undone).
+- Status: workaround confirmed
+- Found by: claude
+
+### 2026-11-12 · Importing buttons and form controls: use `<i data-wftag>` stand-ins
+- Area: mcp
+- Scope: template-candidate
+- Symptom: the WHTML importer turns `<button>` into a Link, and the Forms docs page lost every control. A custom stand-in tag (`<wf-button>`, `<wf-input>`…) was silently removed with its classes and attributes, leaving only its children (16 Home buttons and the whole Forms page lost).
+- Cause: the importer keeps known tags only; `<i>` and `<dialog>` survive as DOM elements with classes, attributes and block children, unknown tags are unwrapped. A `<span>` inside an `<i>` becomes the text "##INLINE0##".
+- Fix (inputs are void: always emit `<i data-wftag="input" …></i>` before rewriting any closing tags, or a label that wraps its input stays open and the parser re-opens it in every following block, creating extra labels and forms): write each `<button>`, `<input>`, `<select>`, `<option>`, `<textarea>`, `<form>` and `<label>` as `<i data-wftag="<tag>" …>` (spans inside them as `<div>`), import, then per element `set_tag` to the data-wftag value and `remove_attribute data-wftag`. Verify by counting tags afterwards.
+- Status: workaround confirmed
+- Found by: claude
+
 ### 2026-11-12 · "Made in Webflow" badge hidden from the repo CSS
 - Area: css
 - Scope: project

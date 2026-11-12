@@ -32,7 +32,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 | Part | Licence | Where |
 | --- | --- | --- |
-| Phosphor Icons (icon font, `pnpm phosphor`) | MIT | `src/phosphor/LICENSE` |
+| Remix Icon (icon font, package `remixicon`, bundled by `pnpm build`) | Apache 2.0 | `node_modules/remixicon/License` |
+| Phosphor Icons (icon font; kept as source for the template tooling, not bundled on this site: `src/phosphor.css` is the empty stub from `pnpm phosphor none`) | MIT | `src/phosphor/LICENSE` |
 | Geist font (prototype starter) | SIL Open Font License 1.1 | `.claude/skills/webflow-prototype/prototype-starter/public/fonts/Geist-OFL.txt` |
 | Webflow's default stylesheet, kept for reference only (never linked or bundled); its first part is normalize.css v3 | Webflow's own output, not covered by MIT-0; normalize.css is MIT | `.claude/skills/webflow-build/reference/webflow-default.css` |
 

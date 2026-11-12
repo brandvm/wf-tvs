@@ -26,7 +26,7 @@ pnpm build    # minified -> dist/ (commit the result)
 pnpm check    # tsc --noEmit
 pnpm test     # build + browser checks
 pnpm update-skills   # agent skills, build tooling and new scripts from the latest template release
-pnpm phosphor        # Phosphor icon font in the bundle: regular by default, `pnpm phosphor regular bold` adds weights
+pnpm phosphor        # Phosphor icon font: not bundled on this site (Remix Icon is; `pnpm phosphor regular` would add it back)
 ```
 
 `.wf-template.json` records the template version a repo was created from
@@ -337,7 +337,7 @@ work or anything else, with no attribution required: MIT No Attribution
 released before the licence was added.
 
 It began as a copy of Finsweet's developer-starter (ISC). That notice and
-the licences of the bundled Phosphor icons and Geist font are in
+the licences of the bundled icon font and the Geist font are in
 `THIRD-PARTY-NOTICES.md`; keep that file in repos made from the template.
 `pnpm new-project` removes `LICENSE` from a client repo and marks its
 `package.json` `UNLICENSED`: the client's own code is not released under

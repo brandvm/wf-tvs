@@ -4,7 +4,10 @@
 //     <i class="date-icon ri-calendar-line"></i>
 //     <div class="datepicker" data-date-panel></div>
 //   </div>
-// Optional on the root: data-date-min="today" (no past dates).
+// Optional on the root: data-date-min="today" (no past dates),
+// data-date-max="today" (no future dates, e.g. a date of birth).
+// The value is written as yyyy-mm-dd, the format the live site's forms
+// submit (flatpickr dateFormat "Y-m-d"), so submissions read the same.
 // The calendar is a top-layer popover placed by ./popover. Keyboard: Enter
 // or ArrowDown opens; arrows move by day and week; PageUp/PageDown by month;
 // Enter picks; Escape closes.
@@ -22,6 +25,7 @@ export function initDatePicker() {
     if (!input || !panel) return;
     const today = new Date(); today.setHours(0, 0, 0, 0);
     const min = root.dataset.dateMin === 'today' ? today : null;
+    const max = root.dataset.dateMax === 'today' ? today : null;
     let selected: Date | null = null;
     let cursor = new Date(today);
     panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-label', 'Choose a date');
@@ -29,7 +33,7 @@ export function initDatePicker() {
     input.setAttribute('aria-haspopup', 'dialog'); input.setAttribute('aria-expanded', 'false');
     const pick = (d: Date) => {
       selected = d; cursor = new Date(d);
-      input.value = `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+      input.value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
       input.dispatchEvent(new Event('change', { bubbles: true }));
       pop.close(); input.focus();
     };
@@ -52,7 +56,7 @@ export function initDatePicker() {
         if (key(d) === key(today)) b.classList.add('is-today');
         if (selected && key(d) === key(selected)) { b.classList.add('is-selected'); b.setAttribute('aria-pressed', 'true'); }
         if (key(d) === key(cursor)) b.classList.add('is-active');
-        if (min && d < min) b.disabled = true;
+        if ((min && d < min) || (max && d > max)) b.disabled = true;
         b.setAttribute('aria-label', `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`);
         b.addEventListener('click', () => pick(d));
         grid.appendChild(b);
@@ -60,7 +64,7 @@ export function initDatePicker() {
       panel.append(head, grid);
     };
     const open = () => { if (input.disabled) return; cursor = new Date(selected ?? (min && today < min ? min : today)); render(); pop.open(); input.setAttribute('aria-expanded', 'true'); };
-    const move = (days: number, months = 0) => { cursor = months ? new Date(cursor.getFullYear(), cursor.getMonth() + months, cursor.getDate()) : new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate() + days); if (min && cursor < min) cursor = new Date(min); render(); };
+    const move = (days: number, months = 0) => { cursor = months ? new Date(cursor.getFullYear(), cursor.getMonth() + months, cursor.getDate()) : new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate() + days); if (min && cursor < min) cursor = new Date(min); if (max && cursor > max) cursor = new Date(max); render(); };
     input.addEventListener('click', () => (pop.isOpen() ? pop.close() : open()));
     input.addEventListener('keydown', (e) => {
       const k = e.key;

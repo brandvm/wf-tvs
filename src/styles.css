@@ -161,6 +161,14 @@ body {
   font-feature-settings: "liga" 1, "calt" 1;
 }
 
+/* repo-css: approved-base — no title ends on a single word (the person,
+   2026-11-13). Headings and title-like classes balance their lines; body
+   text avoids a lone last word. :where() keeps it at zero specificity, so
+   a Designer class can still set text-wrap. The Designer has no text-wrap
+   control, hence the repo. */
+:where(h1, h2, h3, h4, h5, h6, .d1, .d2, .d3, .d4, .d5, .d6, [class*="-title"], [class*="-name"], .faq-question-text, .blog-card-title) { text-wrap: balance; }
+:where(p, li, [class*="-text"], [class*="-lead"], [class*="-body"]) { text-wrap: pretty; }
+
 /* Element defaults Webflow's normalize invents. Designer classes are
    0-1-0 or higher, so these never fight real styling. */
 h1,
@@ -546,6 +554,31 @@ html.lenis body {
   transform: rotate(180deg);
 }
 
+/* The location pages' service accordion (module accordion sets .is-open on the tile). */
+.service-tile.is-open .faq-toggle {
+  background-color: var(--_colors---brand--ink, #080829);
+  color: var(--_colors---brand--paper, #fff);
+}
+
+.service-tile.is-open .faq-toggle-icon {
+  transform: rotate(45deg);
+}
+
+/* repo-css: designer-cant — descendant states of the service tile toggle. */
+.service-tile-toggle:hover .service-tile-name {
+  color: var(--_colors---brand--accent, #1c1ce6);
+}
+
+.service-tile-toggle:active .faq-toggle {
+  background-color: var(--_colors---blue-tint--blue-16, #dde2fc);
+}
+
+/* Module open-hours sets data-open-state on the clinic scope: a closed
+   clinic's status dot turns grey. */
+[data-open-state="closed"] .location-status-dot {
+  background-color: var(--_colors---ink-tint--ink-24, #0808293d);
+}
+
 .faq-item.is-open .faq-toggle {
   background-color: var(--_colors---brand--ink, #080829);
   color: var(--_colors---brand--paper, #fff);
@@ -804,6 +837,43 @@ html.lenis body {
   .phone-row:focus-visible .phone-well-icon,
   .button:hover .button-icon.is-well .icon-glyph,
   .button:focus-visible .button-icon.is-well .icon-glyph {
+    animation: phone-shake 0.7s ease-in-out;
+    transform-origin: 50% 50%;
+  }
+}
+
+/* repo-css: designer-cant — CSS counters and ::before. Each Service Item on
+   the Services template is numbered 01, 02… within its group (a CMS list
+   can't number its items). Display, alignment and gap of the title are in
+   the Designer. */
+.help-items { counter-reset: help-item; }
+.help-item { counter-increment: help-item; }
+.help-item-title::before {
+  content: counter(help-item, decimal-leading-zero);
+  flex: none;
+  color: var(--_colors---brand--accent, #1c1ce6);
+  font-size: var(--_typography-scale---size--14, .875em);
+  letter-spacing: 0;
+}
+
+/* repo-css: designer-cant — @keyframes, color-mix() and descendant hover.
+   The Services template's live dot pulses, and its clinic phone cards ring
+   their phone well like the Call button. Off for reduced motion. */
+@keyframes live-pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--_colors-semantic---status--success, #1a7f4b) 60%, transparent); }
+  100% { box-shadow: 0 0 0 var(--_spacing---8, .5em) color-mix(in srgb, var(--_colors-semantic---status--success, #1a7f4b) 0%, transparent); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .live-dot { animation: live-pulse 1.6s ease-out infinite; }
+
+  .phone-card:hover .phone-well,
+  .phone-card:focus-visible .phone-well {
+    animation: phone-ripple 1.1s ease-out infinite;
+  }
+
+  .phone-card:hover .phone-well-icon,
+  .phone-card:focus-visible .phone-well-icon {
     animation: phone-shake 0.7s ease-in-out;
     transform-origin: 50% 50%;
   }

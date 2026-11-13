@@ -25,6 +25,33 @@ collected from client repos into those files.
 
 ## This project
 
+### 2026-11-13 · Native forms through the importer: names, ids and the checkbox
+- Area: mcp
+- Scope: template-candidate
+- Symptom: importing a `<form>` with native fields made a real Form Block (FormWrapper › FormForm, Success and Error states), but the form was named "Html Form", every `<select>` was named "Field", fields took the `name` attribute (First-Name) instead of the `data-name` (First Name), and the checkbox came in wrapped with an inline label holding its name ("No-Date-of-Visit") beside the markup's own "N/A". Renaming a field through `set_settings name` also rewrote its DOM id (lead-north-york-First-Name → First-Name), which breaks the `for` of the labels and duplicates ids when two forms share a page.
+- Cause: importer and Webflow defaults: the DOM id follows the field Name unless set explicitly.
+- Fix: after import, `set_settings` `name` on the FormWrapper and every field (the data-name values), then `domId` on every field with the form's prefix, last. Checkbox: `set_text` the FormInlineLabel to the label text and remove the extra text block. The select toggles stay `<i data-wftag="button">` → `set_tag button`. Two forms with the same fields: build one, make it a component, `duplicate_component`, then rename and re-id the copy.
+- Status: workaround confirmed
+- Found by: claude
+
+### 2026-11-13 · A component's Link prop CAN bind to a CMS field on a template
+- Area: mcp
+- Scope: template-candidate
+- Symptom: MANUAL-TODO Q treated "link prop to a CMS field" as Designer-only.
+- Cause: on a CMS template page (not inside a Collection List), `set_component_instance_prop_values` with `type: "bindable"`, `binding_source_type: "cms"` binds a C | Button Link to a Link field (Get directions → Map link).
+- Fix: use it on templates; inside Collection Lists keep the Designer step until tested there.
+- Status: confirmed
+- Found by: claude
+
+### 2026-11-13 · Services template: what the API could and couldn't do
+- Area: mcp
+- Scope: template-candidate
+- Symptom: building the Services CMS template: (1) `transform_element_to_component` refused Home's Reviews and Locations sections; (2) every `sort` and `filters` write on the template's five new Collection Lists returned "[Conflict] … component map", with the lists at body level, the template open in the Designer and every item Ready; (3) `visibility` has no CMS sources (`get_bindable_sources` returns none), so "is set" conditions can't be written; (4) a Phone field DID bind as text to a Block (div) Phone Card Number, where it failed on a Span on Home (row R).
+- Cause: (1) the sections contain bound Collection Lists; (2) unknown, as on Home; (3) conditional visibility is Designer-only; (4) the text binding takes a Phone field on a Text Block, not on an importer Span.
+- Fix: (1) Designer › right-click › Create component (untick "Create N properties"); (2) build the list, its classes, hooks and bindings by API, and leave sort/filter to the Designer (MANUAL-TODO T); (3) MANUAL-TODO V; (4) write phone numbers as a `<div>`, never a `<span>`, and bind by API. An empty template slot was seeded with a temporary "Slot Helper" component (group Temp; lessons/mcp.md 2026-10-29): delete it once no page needs it.
+- Status: workaround confirmed
+- Found by: claude
+
 ### 2026-11-13 · Imported links keep their href as a custom attribute
 - Area: mcp
 - Scope: template-candidate

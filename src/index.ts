@@ -20,6 +20,9 @@ import { initInteractiveCollage } from './modules/interactive-collage';
 import { initAccordion } from './modules/accordion';
 import { initSlider } from './modules/slider';
 import { initReviewModal } from './modules/review-modal';
+import { initContactTabs } from './modules/contact-tabs';
+import { initBlogFilter } from './modules/blog-filter';
+import { initOpenHours } from './modules/open-hours';
 
 // Each module runs in isolation: one that throws is logged and skipped,
 // and every module after it still initializes.
@@ -61,6 +64,9 @@ function boot() {
   run('accordion', initAccordion);
   run('slider', initSlider);
   run('review-modal', initReviewModal);
+  run('contact-tabs', initContactTabs);
+  run('blog-filter', initBlogFilter);
+  run('open-hours', initOpenHours);
   run('style-guide-nav', initStyleGuideNav);
   // Add project feature initializers here: run('<name>', init<Name>);
 }

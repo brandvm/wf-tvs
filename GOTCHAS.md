@@ -25,7 +25,52 @@ collected from client repos into those files.
 
 ## This project
 
+### 2026-11-13 · Imported links keep their href as a custom attribute
+- Area: mcp
+- Scope: template-candidate
+- Symptom: after binding a CMS list's Link Block to the item URL and a phone link to a Phone field, both still carried `href=/blog/spaying-…` / `href=tel:+1416…` under Custom attributes, which would override the binding on the published page.
+- Cause: the WHTML importer stores the source `href` as a custom attribute as well as the link setting.
+- Fix: after binding any imported link, `remove_attribute href` (or delete it under Custom attributes). Query `attribute_name: href` on the page to find them.
+- Status: fixed on Home (Blog Card, Clinic Fact phone)
+- Found by: claude
+
+### 2026-11-13 · All-draft collections make Collection List queries fail with "[Conflict] … component map"
+- Area: mcp
+- Scope: template-candidate
+- Symptom: sort and filter on new Home lists failed in the API and in the Designer, and the canvas showed "No items found" / "No element to style".
+- Cause: every item in the collections was a draft; the canvas renders no draft items and query edits conflicted.
+- Fix: set the items Ready to publish (`isDraft: false`, not published) with the person's OK; then sort, filter and limit worked from the API (`filters` on a Switch take `operator: "isOn"`/`"isOff"`; `limit` is a static number).
+- Status: fixed
+- Found by: human + claude
+
+### 2026-11-13 · Conditional visibility can match the CMS item itself
+- Area: designer
+- Scope: template-candidate
+- Symptom: per-item icons in a Services list were driven by an extra Option field (Icon), because a condition on Name breaks when an editor renames an item.
+- Cause: missed that the Visibility conditions field list starts with "Current <Item>" (e.g. Current Service): `Current Service is any [Surgery]` matches by item, not by text, and still matches after the item is renamed (tested by the person).
+- Fix: use "Current <Item> is any [item]" for per-item visibility; no Option field needed. The Services Icon option field becomes redundant once all ten icon conditions use it.
+- Status: fixed — Icon field deleted 2026-11-13
+- Found by: human
+
+### 2026-11-13 · Collection List settings through the API: shapes and the Home conflict
+- Area: mcp
+- Scope: template-candidate
+- Symptom: on Home, `sort` (and filters) on a new Collection List returned "[Conflict] The operation could not be applied to the component map", even on a list rebuilt from scratch; source, styles, moves and bindings in the same lists worked. A phone number could not be shown as text from a Phone field.
+- Cause: unknown on the conflict (it cleared once after the person reloaded the Designer, then came back). The value shapes are strict: `source` is `static_json {"collectionId": "<id>"}` on the DynamoWrapper, `sort` is `[{"fieldSlug": "<slug>", "direction": "ascending"|"descending"}]`. A Phone field binds only to a link; a referenced item's field binds as `"<refFieldId>:::<fieldId>"`; a Span can't take a text binding.
+- Fix: build the list, bind it, and put sort/filter/limit in MANUAL-TODO (row N) for the Designer. Show phone numbers from a Plain text field, or bind the text in the Designer (row R).
+- Status: workaround confirmed
+- Found by: claude
+
 <!-- Add new entries here, newest first. -->
+
+### 2026-11-13 · A CMS field's type can't change; re-creating it suffixes the slug
+- Area: mcp
+- Scope: template-candidate
+- Symptom: Services Hero intro, How we can help intro, Step 1–4 body and Service Items Body were Plain text, so the source copy's inline links were lost. The person: any field whose content has (or on live used) inline links must take links.
+- Cause: the API has no type change. Deleting the field and creating it again with the same name gives slug `<name>-2` (the old slug stays reserved), e.g. `hero-intro-2`, `body-2`.
+- Fix: deleted + re-created as Rich text (same display names, help "links allowed"), refilled from `Assets/content/tvs-service-pages/` with links rewritten to `/services/…` and `/locations/…`, field groups re-applied. Bind templates to the `-2` slugs. Decide Plain vs Rich per field before importing: does the source or live page link inside it?
+- Status: workaround confirmed
+- Found by: human + claude
 
 ### 2026-11-13 · data-* attributes refused on two imported Image elements
 - Area: mcp

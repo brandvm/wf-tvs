@@ -16,6 +16,9 @@
 //     <button data-blog-filter-more data-blog-filter-page="9">Show more</button>
 //   </div>
 // Cards that don't match, or lie past the current page, get .is-hidden.
+// In Webflow each card sits in a Collection List item (.w-dyn-item): the
+// module moves and hides that item, never the card alone, or the empty
+// items stay behind as grid cells and open a gap above the cards.
 // Without JS every card shows and the chips do nothing. No-op when absent.
 
 export function initBlogFilter() {
@@ -34,6 +37,18 @@ export function initBlogFilter() {
 
     const text = new Map(items.map((el) => [el, (el.textContent || '').replace(/\s+/g, ' ').toLowerCase()]));
     const original = items.slice();
+    // The list's direct child holding each card: the card itself in the
+    // prototype, its .w-dyn-item in Webflow.
+    const rowOf = (el: HTMLElement) => {
+      let row = el;
+      while (row.parentElement && row.parentElement !== list) row = row.parentElement;
+      return row;
+    };
+    const setHidden = (el: HTMLElement, hide: boolean) => {
+      el.classList.toggle('is-hidden', hide);
+      const row = rowOf(el);
+      if (row !== el) row.hidden = hide;
+    };
     let category = chips.find((c) => c.getAttribute('aria-pressed') === 'true')?.dataset.blogFilterChip || 'all';
     let shown = pageSize;
 
@@ -48,11 +63,11 @@ export function initBlogFilter() {
       } else if (order === 'title') {
         sorted.sort((a, b) => (text.get(a) || '').localeCompare(text.get(b) || ''));
       }
-      sorted.forEach((el) => list.appendChild(el));
+      sorted.forEach((el) => list.appendChild(rowOf(el)));
 
       const matches = sorted.filter((el) => (category === 'all' || el.dataset.category === category) && (!query || (text.get(el) || '').includes(query)));
-      sorted.forEach((el) => el.classList.add('is-hidden'));
-      matches.slice(0, shown).forEach((el) => el.classList.remove('is-hidden'));
+      const visibleSet = new Set(matches.slice(0, shown));
+      sorted.forEach((el) => setHidden(el, !visibleSet.has(el)));
 
       const visible = Math.min(shown, matches.length);
       if (more) more.classList.toggle('is-hidden', visible >= matches.length);
@@ -90,8 +105,10 @@ export function initBlogFilter() {
       apply(true);
       // Move focus to the first card that just appeared, so keyboard users
       // carry on from where the new cards start.
-      const visible = items.filter((el) => !el.classList.contains('is-hidden'));
-      const target = Array.from(list.children).filter((el) => visible.includes(el as HTMLElement))[firstNew] as HTMLElement | undefined;
+      const visible = Array.from(list.children)
+        .map((row) => items.find((el) => rowOf(el) === row))
+        .filter((el): el is HTMLElement => !!el && !el.classList.contains('is-hidden'));
+      const target = visible[firstNew];
       target?.focus({ preventScroll: false });
     });
 

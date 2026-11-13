@@ -564,6 +564,22 @@ html.lenis body {
   transform: rotate(45deg);
 }
 
+/* repo-css: designer-cant — :has() and an ARIA attribute state. While the
+   panel's height animates (Service Tile Panel transition, set in Webflow),
+   its content fades and rises in; on close it fades first. Keyed on
+   aria-expanded, which only the module sets, so without JavaScript nothing
+   is hidden. Reduced motion: no fade (the module skips the height too). */
+@media (prefers-reduced-motion: no-preference) {
+  .service-tile.is-accordion .service-tile-panel-inner {
+    transition: opacity 300ms ease 80ms, transform 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .service-tile.is-accordion:has([data-accordion-toggle][aria-expanded="false"]) .service-tile-panel-inner {
+    opacity: 0;
+    transform: translate(0, calc(var(--_spacing---8, .5em) * -1));
+    transition: opacity 150ms ease, transform 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
 /* repo-css: designer-cant — descendant states of the service tile toggle. */
 .service-tile-toggle:hover .service-tile-name {
   color: var(--_colors---brand--accent, #1c1ce6);

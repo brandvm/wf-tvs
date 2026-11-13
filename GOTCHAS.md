@@ -27,6 +27,42 @@ collected from client repos into those files.
 
 <!-- Add new entries here, newest first. -->
 
+### 2026-11-13 · data-* attributes refused on two imported Image elements
+- Area: mcp
+- Scope: template-candidate
+- Symptom: `set_attributes` / `set_settings attributes` on the review modal's two images (imported with no asset) failed with "MPS rejected update … [Conflict] … component map"; after `set_image_asset` the call reported success, but `get_attributes` read back empty and the published `<img>` had no attribute. Other images on the page (the dog, `data-rise`) took attributes fine.
+- Cause: unknown; both were Images created by the WHTML importer without an asset inside a `<dialog>` DOM element.
+- Fix: the module also finds those images by class (`review-modal.ts`, `byClass`). For scripts, prefer hooks on a wrapper div over attributes on an Image.
+- Status: workaround confirmed
+- Found by: claude
+
+### 2026-11-13 · Review card text overflowed: the line clamp lived half in the Designer
+- Area: css
+- Scope: project
+- Symptom: with the full review texts in the cards, the text ran up over the photo; no ellipsis.
+- Cause: the repo rule set only `-webkit-box-orient` and `-webkit-line-clamp`; `display: -webkit-box` and `overflow: hidden` were assumed to come from the Designer, which can't set `-webkit-box`. The old texts were short enough not to show it.
+- Fix: the whole clamp is in the repo rule (`display`, `overflow`, both clamp properties), as in the prototype.
+- Status: fixed in `src/styles.css` (uncommitted)
+- Found by: claude
+
+### 2026-11-13 · Repo media rules for a custom width beat the Designer's smaller breakpoints
+- Area: css
+- Scope: template-candidate
+- Symptom: on every docs page at 991px and below, content started 165px lower than the prototype; the stacked docs nav was 224px tall instead of 59px.
+- Cause: the repo's `@media (max-width: 1279px) { .sgd-side { flex-basis: 14em } }` (a width the Designer has no breakpoint for) loads after Webflow's CSS, so it also wins over the Designer's 991px `flex: none` and 479px paddings on the same classes. In the prototype both live in one file, 1279 before 991, so the smaller breakpoint wins there.
+- Fix: give repo rules for an in-between width a floor: `@media (min-width: 992px) and (max-width: 1279px)`. Do the same for any custom-width rule whose properties the Designer also sets at 991/767/479.
+- Status: fixed in `src/styles.css` (uncommitted)
+- Found by: claude
+
+### 2026-11-13 · Image width/height attributes can't be restored through the API
+- Area: mcp
+- Scope: template-candidate
+- Symptom: Logo docs specimens rendered at their natural size (347×78 instead of 249×56); the prototype sizes them with `height="56"` etc.
+- Cause: the WHTML importer drops every `<img>` attribute, `set_attributes` refuses `width`/`height` on an Image ("internal error"), and Image settings expose no size keys.
+- Fix: a height combo per size on the image class (Sgd Logo Img + Is H32…Is H210, em values). On site design, size images by class from the start rather than by attribute.
+- Status: workaround confirmed
+- Found by: claude
+
 ### 2026-11-12 · Nested variant props: link in the Designer, set by API
 - Area: mcp
 - Scope: template-candidate

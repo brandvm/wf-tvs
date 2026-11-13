@@ -95,9 +95,11 @@
    browser's 16px, so rem values and px-named Designer tokens keep their
    meaning, and the Designer canvas shows the same scale (it loads this sheet).
 
-   Desktop: 1em = --size-unit px at the design frame (--size-container-ideal,
-   no unit) and above, up to --size-container-max; it shrinks with the
-   viewport down to --size-container-min and holds from there to 992px.
+   Desktop: 1em = --size-unit px from 992px up to 1920px (the 1440 design
+   frame: --size-container-ideal, no unit; min and max both 1440px). Wider
+   screens step up in bands (the person, 2026-11-13): 1921–2240px scales to
+   a 1680 frame, above 2240px to a 1920 frame (16px up to 1920 wide,
+   18.67px at 2000, 21.33px at 2560).
    Tablet and mobile (991px and below): a fixed 1rem; the variables'
    breakpoint modes do the resizing there. Set ideal/min/max to the design
    before the prototype (webflow-build › checklists › Before the
@@ -107,9 +109,15 @@
 :root {
   --size-container-ideal: 1440;
   --size-container-min: 1440px;
-  --size-container-max: 1680px;
+  --size-container-max: 1440px;
   --size-container: clamp(var(--size-container-min), 100vw, var(--size-container-max));
   --size-font: calc(var(--size-container) / (var(--size-container-ideal) / var(--size-unit)));
+}
+@media screen and (min-width: 1921px) {
+  :root { --size-container-max: 1680px; }
+}
+@media screen and (min-width: 2241px) {
+  :root { --size-container-max: 1920px; }
 }
 @media screen and (max-width: 991px) {
   :root { --size-font: 1rem; }
@@ -680,8 +688,11 @@ html.lenis body {
 }
 
 .review-card-text {
+  display: -webkit-box;
+  overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 4;
+  line-clamp: 4;
 }
 
 .blog-card-title,
@@ -699,6 +710,67 @@ html.lenis body {
   background-color: var(--_colors---ink-tint--ink-48, #0808297a);
   -webkit-backdrop-filter: blur(var(--_effects---blur--light, .25em));
   backdrop-filter: blur(var(--_effects---blur--light, .25em));
+}
+
+/* repo-css: designer-cant — a card's hover and focus reaching its children,
+   media queries on hover capability and reduced motion, and ::backdrop.
+   Review cards (module review-modal): on devices that hover, the "Read full
+   review" pill appears on hover or keyboard focus (always shown on touch);
+   the photo zooms in gently (reduced motion: no zoom); the page behind the
+   review dialog dims. */
+@media (hover: hover) and (pointer: fine) {
+  .review-card .review-card-more {
+    opacity: 0;
+    transform: translate(0, calc(var(--_spacing---4, .25em) * -1));
+  }
+  .review-card:hover .review-card-more,
+  .review-card:focus-visible .review-card-more {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .review-card:hover .review-card-photo,
+  .review-card:focus-visible .review-card-photo {
+    transform: scale(1.05);
+  }
+}
+
+.review-card:active .review-card-scrim {
+  background-color: var(--_colors---ink-tint--ink-12, #0808291f);
+}
+
+/* repo-css: designer-cant — the [open] attribute. A closed <dialog> stays
+   hidden by the browser; open, the review dialog lays out as a row (photo
+   beside the text), and as a scrolling column on phones. */
+.review-modal[open] {
+  display: flex;
+}
+
+@media screen and (max-width: 767px) {
+  .review-modal[open] {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+}
+
+.review-modal::backdrop {
+  background-color: var(--_colors---ink-tint--ink-64, #080829a3);
+  -webkit-backdrop-filter: blur(var(--_effects---blur--light, .25em));
+  backdrop-filter: blur(var(--_effects---blur--light, .25em));
+}
+
+/* repo-css: designer-cant — -webkit-user-drag and -webkit-touch-callout.
+   Nothing in a draggable marquee (hero reassurance bar, CTA gallery) can be
+   dragged out as an image or link, or long-pressed for its menu, so a drag
+   always moves the marquee. */
+[data-draggable-marquee-init] img,
+[data-draggable-marquee-init] svg,
+[data-draggable-marquee-init] a {
+  -webkit-user-drag: none;
+  user-drag: none;
+  -webkit-touch-callout: none;
 }
 
 /* repo-css: designer-cant — @keyframes, color-mix() and a reduced-motion
@@ -752,7 +824,10 @@ html.lenis body {
 .sgd-article .sg-row-note { max-width: 46em; font-family: var(--_typography-scale---family--body, "Instrument Sans", sans-serif); font-size: 0.9375em; line-height: 1.6; opacity: 1; color: var(--_colors---neutral--slate, #6b6b7f); }
 .sgd-article .sg-row-demo { align-self: stretch; flex: none; }
 .sgd-article .sg-swatch { flex: 1 1 9.5em; max-width: 12.5em; }
-@media screen and (max-width: 1279px) {
+/* min-width 992px: this sheet loads after Webflow's, so without the floor
+   these rules would beat the Designer's 991/479 rules on the same classes
+   (the stacked nav took flex-basis 14em = 224px tall). */
+@media screen and (min-width: 992px) and (max-width: 1279px) {
   .sgd-side { flex-basis: 14em; padding-left: 1.5em; }
   .sgd-main { gap: 2.5em; padding-right: 2em; padding-left: 2em; }
   .sgd-toc { flex-basis: 11em; }

@@ -14,10 +14,12 @@ import { initMarqueeClip } from './modules/marquee-clip';
 import { initSmoothScroll } from './modules/smooth-scroll';
 import { initCallChooser } from './modules/call-chooser';
 import { initParallax } from './modules/parallax';
+import { initRise } from './modules/rise';
 import { initReveal } from './modules/reveal';
 import { initInteractiveCollage } from './modules/interactive-collage';
 import { initAccordion } from './modules/accordion';
 import { initSlider } from './modules/slider';
+import { initReviewModal } from './modules/review-modal';
 
 // Each module runs in isolation: one that throws is logged and skipped,
 // and every module after it still initializes.
@@ -51,12 +53,14 @@ function boot() {
   run('smooth-scroll', initSmoothScroll);
   run('call-chooser', initCallChooser);
   run('parallax', initParallax);
+  run('rise', initRise);
   run('reveal', initReveal);
   // cms-color is not ported: it stood in for the CMS binding of the
   // wrapper's text colour to the item's Service colour field.
   run('interactive-collage', initInteractiveCollage);
   run('accordion', initAccordion);
   run('slider', initSlider);
+  run('review-modal', initReviewModal);
   run('style-guide-nav', initStyleGuideNav);
   // Add project feature initializers here: run('<name>', init<Name>);
 }

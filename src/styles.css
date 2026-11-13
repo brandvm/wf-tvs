@@ -774,6 +774,51 @@ html.lenis body {
   background-color: var(--_colors---ink-tint--ink-12, #0808291f);
 }
 
+/* repo-css: designer-cant — a tile's hover reaching a nested component's
+   child, and max-width/gap transitions on Button Content's parts.
+   C | Button with Color "Circle" and Size "Circle" (service tiles, the
+   person's choice 2026-11-13): a 32px arrow circle at rest; hovering the
+   tile or the button, or keyboard focus, slides the label out and fills it
+   blue (the fill on the button's own hover is the Circle variant's hover
+   style). The label stays in the DOM, so screen readers always read it.
+   Hooks are Webflow's variant attributes: renaming the Circle variants
+   changes them, so update these selectors with it. */
+[data-wf--button-size--variant="circle"] .button-content {
+  gap: 0;
+  transition: gap 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+[data-wf--button-size--variant="circle"] [data-part="label"] {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+  transition: max-width 300ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms ease, padding 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.service-tile:hover [data-wf--button-color--variant="circle"],
+.button:focus-visible [data-wf--button-color--variant="circle"] {
+  border-color: var(--_colors-semantic---text--accent, #1c1ce6);
+  background-color: var(--_colors-semantic---text--accent, #1c1ce6);
+  color: var(--_colors-semantic---background--page, #ffffff);
+}
+.service-tile:hover [data-wf--button-size--variant="circle"] .button-content,
+.button:hover [data-wf--button-size--variant="circle"] .button-content,
+.button:focus-visible [data-wf--button-size--variant="circle"] .button-content {
+  gap: var(--_spacing---4, .25em);
+}
+.service-tile:hover [data-wf--button-size--variant="circle"] [data-part="label"],
+.button:hover [data-wf--button-size--variant="circle"] [data-part="label"],
+.button:focus-visible [data-wf--button-size--variant="circle"] [data-part="label"] {
+  max-width: 6em;
+  opacity: 1;
+  padding-left: var(--_spacing---6, .375em);
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-wf--button-size--variant="circle"] .button-content,
+  [data-wf--button-size--variant="circle"] [data-part="label"] {
+    transition: none;
+  }
+}
+
 /* repo-css: designer-cant — the [open] attribute. A closed <dialog> stays
    hidden by the browser; open, the review dialog lays out as a row (photo
    beside the text), and as a scrolling column on phones. */

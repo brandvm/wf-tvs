@@ -589,6 +589,45 @@ html.lenis body {
   display: none;
 }
 
+/* repo-css: designer-cant — :has(), sibling combinators and :first/:last-child
+   inside a bound Rich Text. The Designer sets each tag's own look and its
+   bottom margin as nested selectors (MANUAL-TODO EE, AB); the spacing that
+   depends on the next or previous element lives here, as in the prototype
+   (new-classes-blog.css, new-classes-service.css). */
+.post-body h2 strong,
+.post-body h3 strong {
+  font-weight: inherit;
+}
+.post-body > :has(+ h2) {
+  margin-bottom: var(--_spacing---48, 3em);
+}
+.post-body > :has(+ h3),
+.post-body > :has(+ h4),
+.post-body > :has(+ blockquote) {
+  margin-bottom: var(--_spacing---28, 1.75em);
+}
+.post-body > figure:has(+ h3),
+.post-body > figure:has(+ h4) {
+  margin-bottom: var(--_spacing---32, 2em);
+}
+.post-body > h2 + * {
+  margin-top: var(--_spacing---16, 1em);
+}
+.post-body > h3 + *,
+.post-body > h4 + * {
+  margin-top: var(--_spacing---10, 0.625em);
+}
+.post-body > blockquote + * {
+  margin-top: var(--_spacing---28, 1.75em);
+}
+.post-body > :first-child {
+  margin-top: 0;
+}
+.post-body > :last-child,
+.book-solo-text > :last-child {
+  margin-bottom: 0;
+}
+
 /* repo-css: designer-cant — descendant states of the service tile toggle. */
 .service-tile-toggle:hover .service-tile-name {
   color: var(--_colors---brand--accent, #1c1ce6);

@@ -707,6 +707,16 @@ html.lenis body {
 }
 
 /* The Navigation page (/design/navigation) lays every nav part out open. */
+/* repo-css: designer-cant — descendant combinator over a <dialog>: the Call
+   Chooser instance on /design/navigation is a closed dialog (display none)
+   and its root can't take a combo class, so it is shown open here only.
+   The module still opens the nav's own copy, which comes first. */
+.nav-stage .call-chooser {
+  position: static;
+  display: block;
+  box-shadow: none;
+}
+
 .nav-stage .topbar,
 .nav-stage .nav-bar {
   padding-right: var(--_spacing---40, 2.5em);

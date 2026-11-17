@@ -25,6 +25,181 @@ collected from client repos into those files.
 
 ## This project
 
+### 2026-11-17 · Sort on a new static-page list works when source and sort are written in ONE call
+- Area: mcp
+- Scope: template-candidate
+- Symptom: on /contact-us a new Locations list took `source`, then every `sort` write (API, and the Designer's Sort +, also after a reload) returned "[Conflict] … component map", as on /blog.
+- Cause: unknown; a sort added after the source conflicts on these lists.
+- Fix: create a fresh `CMSCollection`, then one `set_settings` operation with both `source` and `sort` (two keys, same call) — accepted and read back. Build the item first in any list and `move_element` it into the sorted list; bindings survive the move. (The element builder refuses `source` at creation: "not applicable".) Also: the builder can't bind a new element inside a list at creation ("not inside a CMS context"); create it, then bind with `set_settings`.
+- Status: workaround confirmed (Contact clinic list, MANUAL-TODO CB)
+- Found by: claude
+
+### 2026-11-17 · A colour typed as `var(--…)` can publish as `@var_variable-…` (dropped by browsers)
+- Area: designer
+- Scope: template-candidate
+- Symptom: nested `.help-item-body a` published `color: @var_variable-fdfc898a-…` (Brand/Accent's id) instead of `var(--_colors---brand--accent)`; links rendered grey. The same typed value on `.book-solo-text a` and `.post-body a` published fine. The Designer field showed "Brand/Accent" either way.
+- Cause: unknown; the custom-value editor stored a reference the publisher could not resolve.
+- Fix: Option-click the property label to reset it, type the `var()` again, republish. After any Designer variable binding, grep the published CSS for `@var_`. Also, for nested rich-text selectors: the API still can't see them (`update_style` "Post Body > All Paragraphs not found"), so set every property in the Designer; heading sizes go fastest by setting the nested selector's Typography Styles mode (e.g. H3) and overriding only what differs. Escape in a spacing popover clears the element selection; click the panel instead.
+- Status: fixed on staging
+- Found by: claude
+
+### 2026-11-17 · Designer: typing right after inserting an element goes to keyboard shortcuts
+- Area: designer
+- Scope: template-candidate
+- Symptom: after inserting a Rich Text from the Add panel with a Section selected, the Rich Text landed inside the section, and typing a class name into the style selector was taken as single-key shortcuts (the Apps panel opened, the selection changed).
+- Cause: the new element wasn't selected yet when the selector was clicked, so focus stayed on the canvas.
+- Fix: deleted the stray element; check the selection (breadcrumb) and that the selector field has focus before typing. Insert temporary elements after a top-level component instance (they go beside it), not with a Section selected (they go inside). Also: `set_link` with `linkType: page` works on links inside components, and the Designer's "Use alt text from asset" is stored as `altText: "inherit"` (the API refuses to write it).
+- Status: workaround confirmed
+- Found by: claude
+
+### 2026-11-13 · `transition` IS writable through the style API
+- Area: mcp
+- Scope: template-candidate
+- Symptom: MANUAL-TODO rows AH, AL, CA, EC, EH, W list every transition as Designer-only.
+- Cause: assumed from an older note; `update_style` with `property_name: "transition"`, `property_value: "height 350ms cubic-bezier(0.4, 0, 0.2, 1)"` applied to Service Tile Panel, read back and published (the location accordion now animates). Variant styles return `transition` too.
+- Fix: write transitions by API; the transition rows can be done without the Designer.
+- Status: confirmed; rows AH, AL, CA, EC, EH done by API 2026-11-17 (W's transition too)
+- Found by: claude
+
+### 2026-11-13 · Styling a CMS-bound Rich Text's list: nested selectors only, from an unbound copy
+- Area: designer
+- Scope: template-candidate
+- Symptom: Home's Tile tags (Rich Text bound to a CMS field) showed as a plain bulleted list; the chip look had to go on its `ul`/`li`. Clicking inside a bound Rich Text on the canvas never selects its children, and `update_style` with `parent_style_names` returns "Style \"Service Tags > All List Items\" not found".
+- Cause: nested rich-text selectors exist only in the Designer and are invisible to the style API; bound Rich Text children aren't selectable.
+- Fix: add a temporary unbound Rich Text with the same class, select its `li` (and `ul`), open the style selector, press Down + Return to pick the HTML tag (clicking the tag pill does not stick), then tick "Nest selector inside of <class>" and set the properties there (variables via the purple dot in each field). Clicking a property on a classless child without that step creates a stray class named after the element (undo it). Put inherited type settings on the parent class by API to save Designer steps. Delete the temporary element.
+- Status: workaround confirmed (MANUAL-TODO P)
+- Found by: claude
+
+### 2026-11-13 · A sort written by API blocks every later filter on that list ("[Conflict] … component map")
+- Area: mcp
+- Scope: template-candidate
+- Symptom: on the Locations template's FAQ list, adding any filter failed with "[Conflict] The operation could not be applied to the component map", in the Designer (twice, after a reload, no other writer) and by API. Items were not drafts.
+- Cause: the list's sort had been written by API first. A fresh list took a filter fine; after clearing the sort (`set_settings` key `sort`, `clear: true`) the same list took a filter again. Matches lessons/mcp.md 2026-10-29 (filter and sort refuse each other when written separately).
+- Fix: on lists that need both, write neither by API: set filter and sort together in the Designer. If a sort is already there, clear it by API first. "Current item" filters are Designer-only anyway (the API wants a fixed item id).
+- Later the same day: after one fixed-id filter was written by API on a fresh list on that template, a second fresh list on the same template refused any filter ("[Conflict]"), alone or with sort; the Designer also kept refusing "+ Filter" on the original list. So the conflict is not only sort-then-filter. Resolved: the person set filter (Current Location) and sort on the SAME list in their own Designer and it worked — the failures came from the automated (browser-driven) Designer and from API writes, not from the list. Note: a "current item" filter reads back as `filters: []` through the API; check it on the published page, not by API read.
+- Status: workaround confirmed (set current-item filters in a human Designer)
+- Found by: claude (after the planning session hit it in the Designer)
+
+### 2026-11-13 · Video can be hosted byte for byte through the Data API
+- Area: mcp
+- Scope: template-candidate
+- Symptom: `media.md` says Webflow only hosts a video uploaded as a Background Video, which Webflow re-encodes (quality loss); the person wanted the original.
+- Cause: the Data API asset upload (`data_assets_tool create_asset` with the file's MD5, then a multipart POST of the bytes to the returned S3 `uploadUrl`) accepts `video/mp4` up to 30 MB and stores the file untouched; the CDN serves it with `accept-ranges: bytes`.
+- Fix: landing hero original uploaded that way (asset `6af776e7869bcc4a16b15c18`, MD5 of the CDN copy = the source file) and played with a plain `<video>`; listed on /design/media. Use the Background Video route only when Webflow's transcodes are wanted.
+- Status: workaround confirmed
+- Found by: human + claude
+
+### 2026-11-13 · Collection List `offset` and `limit` write fine; `sort` conflicts on a new static page
+- Note (added after the template): on the Blogs Template a brand-new list at body level took `source`, `limit` AND `sort` in one go. On /blog (a page created through `create_page`) every `sort` conflicted, also after moving the list back to body level, before and after its items were filled. Not the slot, not limit/offset; cause still unknown.
+
+### (original entry) Collection List `offset` and `limit` write fine; `sort` still conflicts
+- Area: mcp
+- Scope: template-candidate
+- Symptom: on the new /blog page, `sort` on all four new Collection Lists returned "[Conflict] … component map" (lists at body level, items Ready), while `limit` (1, 3) and `offset` (1) on the same lists applied and read back.
+- Cause: unknown; same conflict as rows N/T.
+- Fix: "featured = newest, then the next three" is built as two lists on the same sort, the second with `offset: 1`, `limit: 3`; the sort itself is a Designer row (EA).
+- Status: workaround confirmed
+- Found by: claude
+
+### 2026-11-13 · Sitemap indexing per page is refused on this plan
+- Area: mcp
+- Scope: template-candidate
+- Symptom: `data_sitemap_tool update_page_sitemap_status` on /design/navigation returned 403 "Site plan doesn't support sitemap indexing controls".
+- Cause: per-page sitemap control needs a paid site plan (as `lessons/mcp.md` 2026-10-05 says for the Designer setting); the API is gated the same way.
+- Fix: noindex meta through `set_page_freeform_code`; sitemap exclusion is a manual row (FB) once the plan allows it.
+- Status: workaround confirmed
+- Found by: claude
+
+### 2026-11-13 · transform_element_to_component can't reach elements inside a component definition
+- Area: mcp
+- Scope: template-candidate
+- Symptom: splitting Nav Bar out of G | Nav W with `transform_element_to_component` (id `{component: <G | Nav W id>, element: …}`) returned "Element … not found"; the same id works in `query_elements` with `scope_component_id`.
+- Cause: the transform action has no `scope_component_id` and only searches the page tree.
+- Fix: nested components are made in the Designer (open the component › right-click › Create component); row FD. Also confirmed: a section holding a bound Collection List is refused with "Components can't hold a live CMS binding" (row FA).
+- Status: workaround confirmed
+- Found by: claude
+
+### 2026-11-13 · duplicate_component prefixes every element id with the new component id
+- Area: mcp
+- Scope: template-candidate
+- Symptom: after `duplicate_component` (Form · North York → Form · Registration North York), every element inside the copy had an id of the form `<newComponentId-prefix><4 hex>` (e.g. `433f9d23-…-3c19fd1774b2`), and the FormWrapper's element id equals the component id. Form name, field names (data-names), required flags, classes and custom attributes were all copied; the `for` attribute was NOT on the copied Form Row Labels (nor visible on the source).
+- Cause: Webflow re-keys the duplicated tree; ids are stable afterwards.
+- Fix: read the copy once with `get_all_elements scope_component_id`, then rename the form (`set_settings name` on the FormWrapper), set every field's `domId` in one `set_settings` batch (27 ops in one call worked), `set_attributes for` on the labels. Field `name` didn't need touching when the data-names stay the same.
+- Status: workaround confirmed
+- Found by: claude
+
+### 2026-11-13 · The WHTML importer drops `target="_blank"` on links
+- Area: mcp
+- Scope: template-candidate
+- Symptom: the Contact section's "Get directions" and Instagram links came in with `rel="noopener"` but no `target="_blank"`; the link setting's "open in new tab" was off. The source `href` was also kept as a custom attribute (as in the 2026-11-13 entry).
+- Cause: importer default; `target` is not carried into the Link setting.
+- Fix: after import, `set_settings` key `link` with `static_link {mode: "url", to, open_in_new_tab: true, rel: "noopener"}` on each external link, then `remove_attribute href`.
+- Status: workaround confirmed
+- Found by: claude
+
+### 2026-11-13 · `create_page` with `duplicateOf` copies a page with its started slot
+- Area: mcp
+- Scope: template-candidate
+- Symptom: a new static page needs G | Page W with a started G | Main slot (MANUAL-TODO K), and the API can't start a slot.
+- Cause: `data_pages_tool › create_page` with `duplicateOf: <Home id>` copies the whole page: G | Page W, the slot content, component instances with their prop overrides and bound Collection Lists. Page head code is not an issue (Home has none).
+- Fix: duplicate Home, then `remove_element` the sections the page doesn't keep, 2–3 per call: a batch of 8 removals in one call returned 429 Too Many Requests for every item (nothing removed). Import new sections `before` the first kept instance.
+- Status: workaround confirmed (About Us)
+- Found by: claude
+
+### 2026-11-13 · Component Link prop: `link_mode: "page"` refused
+- Area: mcp
+- Scope: template-candidate
+- Symptom: `set_component_instance_prop_values` on C | Button's Link prop with `type: "link", link_mode: "page", link_to: <pageId>` failed: "Invalid enum value. Expected 'url' | 'email' | 'phone' | 'popover' | 'modal'", although the tool schema lists `page`.
+- Cause: server-side validation narrower than the schema.
+- Fix: set `mode: url` (`/contact-us`) and add a Designer row to switch it to a page link (DD).
+- Status: open
+- Found by: claude
+
+### 2026-11-13 · Empty-valued data hooks get explicit values before publish
+- Area: mcp
+- Scope: project
+- Symptom: the importer keeps `data-parallax-frame=""`, `data-call-chooser=""`, `data-reveal-stagger=""`, `data-draggable-marquee-*=""` as empty attributes; Webflow strips empty booleans on publish.
+- Cause: modules select by presence (`[data-parallax-frame]`, `[data-call-chooser]`, `[data-draggable-marquee-init]`…); reveal reads `data-reveal-stagger` as seconds (fallback 0.08); the marquee only checks for the value "initialized".
+- Fix: on About, presence hooks set to `"true"`, `data-reveal-stagger` to `"0.08"` (the module default). Apply the same on any imported page.
+- Status: done on About Us
+- Found by: claude (coordinator's note)
+
+### 2026-11-13 · Collection List `offset` and `limit` write fine; `sort` still conflicts
+- Area: mcp
+- Scope: template-candidate
+- Symptom: on the new /blog page, `sort` on all four new Collection Lists returned "[Conflict] … component map" (lists at body level, items Ready), while `limit` (1, 3) and `offset` (1) on the same lists applied and read back.
+- Cause: unknown; same conflict as rows N/T.
+- Fix: "featured = newest, then the next three" is built as two lists on the same sort, the second with `offset: 1`, `limit: 3`; the sort itself is a Designer row (EA).
+- Status: workaround confirmed
+- Found by: claude
+
+### 2026-11-13 · CMS image alt text DOES bind through the API
+- Area: mcp
+- Scope: template-candidate
+- Symptom: MANUAL rows AC/AG and the blog-post pack treat "Image alt from a CMS field" as Designer-only.
+- Cause: inside a Collection List (and on Home's Blog Card Image), `set_settings` key `altText` with a `cms` binding to a Plain text field (Cover alt) applies and reads back. What does not exist is the image field's own alt (an Image field has no alt sub-field to bind).
+- Fix: bind `altText` to a Plain text "… alt" field by API; keep a Designer row only when the alt must come from the image field itself.
+- Status: confirmed on /blog (3 list images)
+- Found by: claude
+
+### 2026-11-13 · Landing pack: a wrapped `<form>` lands one level off; what the form API can't set
+- Area: mcp
+- Scope: template-candidate
+- Symptom: importing `<div class="clinic-form is-card"><form class="clinic-form-body is-compact">…</form><div class="form-success">…</div></div>` gave an outer Block with the div's classes, a FormWrapper carrying the `<form>`'s classes, a class-less FormForm, Webflow's own Success/Error blocks inside, and my two extra divs as stray siblings. Then: no `placeholder` key on fields (set_attributes `placeholder` = "internal error"); `set_attributes`/`set_settings attributes` on FormSuccessMessage/FormErrorMessage = "[Conflict] … component map"; `set_text` refuses Blocks ("doesn't support text").
+- Cause: the importer turns the `<form>` itself into the Form Block; placeholders only come from the import.
+- Fix: import the `<form>` alone (or restyle: FormWrapper → wrapper classes, FormForm → form classes, move the wrapper out, remove the shell). To change a placeholder, remove the field and import a lone `<textarea>`/`<input>` with the new placeholder into its cell: inside a form it arrives as a real FormTextarea/FormTextInput. Block text: `set_settings` key `text` with `static_text`. Success/Error attributes: Designer (MANUAL-TODO AJ).
+- Status: workaround confirmed
+- Found by: claude
+
+### 2026-11-13 · Landing pack: smaller API facts (sms links, href, drafts, page duplicates)
+- Area: mcp
+- Scope: template-candidate
+- Symptom: (1) `set_link url "sms:+1…"` reported success but stored nothing; (2) binding a custom attribute named `href` to a prop: "reserved attribute name"; (3) `bulk_update_pages` with `draft: false` returned the pages still `draft: true`; (4) the pack's tile SVGs had no `width`/`height` on `<svg>` and `<rect>`, so the icon tiles would render blank.
+- Cause: (1)(2) link settings vs attributes; (3) unknown; (4) the pack generator stripped size attributes (the importer keeps them on SVG DOM elements, only `<img>` loses them).
+- Fix: (1)(2) a component `link` prop with mode `url` and `to: "sms:+1…"` bound to the Link's `link` key works and publishes `href="sms:…"`; (3) `update_page_settings` per page works; (4) took the tiles from `prototype/<slug>/index.html` instead. Also: `create_page` with `duplicateOf` copies the page with the SAME element ids (only the component part changes), so one page's ids drive edits on its copies; head code is not copied.
+- Status: workaround confirmed
+- Found by: claude
+
 ### 2026-11-13 · Native forms through the importer: names, ids and the checkbox
 - Area: mcp
 - Scope: template-candidate

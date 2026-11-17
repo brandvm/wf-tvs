@@ -580,6 +580,15 @@ html.lenis body {
   }
 }
 
+/* repo-css: designer-cant — :has(). The blog post's "More on this topic"
+   section (Blog Cards, filtered to the post's category, current post
+   excluded): when no other post shares the category, Webflow renders only
+   the list's empty state (Blog Dyn Empty, hidden), which would leave the
+   heading over nothing. Hide the whole section then (MANUAL-TODO ED). */
+.section:has(> .s-wrapper > .w-dyn-list > .blog-dyn-empty) {
+  display: none;
+}
+
 /* repo-css: designer-cant — descendant states of the service tile toggle. */
 .service-tile-toggle:hover .service-tile-name {
   color: var(--_colors---brand--accent, #1c1ce6);

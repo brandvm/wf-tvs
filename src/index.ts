@@ -23,6 +23,7 @@ import { initReviewModal } from './modules/review-modal';
 import { initContactTabs } from './modules/contact-tabs';
 import { initBlogFilter } from './modules/blog-filter';
 import { initOpenHours } from './modules/open-hours';
+import { initShareLinks } from './modules/share-links';
 
 // Each module runs in isolation: one that throws is logged and skipped,
 // and every module after it still initializes.
@@ -67,6 +68,7 @@ function boot() {
   run('contact-tabs', initContactTabs);
   run('blog-filter', initBlogFilter);
   run('open-hours', initOpenHours);
+  run('share-links', initShareLinks);
   run('style-guide-nav', initStyleGuideNav);
   // Add project feature initializers here: run('<name>', init<Name>);
 }

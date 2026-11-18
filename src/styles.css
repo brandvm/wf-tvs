@@ -95,10 +95,10 @@
    browser's 16px, so rem values and px-named Designer tokens keep their
    meaning, and the Designer canvas shows the same scale (it loads this sheet).
 
-   Desktop: 1em = --size-unit px from 992px up to 1440px (the 1440 design
-   frame: --size-container-ideal, no unit; min 1440px). From 1440px to
-   1680px it scales with the viewport, then holds at 1680 (18.67px) on wider
-   screens (the person, 2026-11-17; replaces the 2026-11-13 bands).
+   Desktop: 1em = --size-unit px at every width from 992px up (the 1440
+   design frame: --size-container-ideal, no unit; min and max both 1440px).
+   No scaling on wide screens (the person, 2026-11-18; replaces the
+   2026-11-13 bands).
    Tablet and mobile (991px and below): a fixed 1rem; the variables'
    breakpoint modes do the resizing there. Set ideal/min/max to the design
    before the prototype (webflow-build › checklists › Before the
@@ -108,7 +108,7 @@
 :root {
   --size-container-ideal: 1440;
   --size-container-min: 1440px;
-  --size-container-max: 1680px;
+  --size-container-max: 1440px;
   --size-container: clamp(var(--size-container-min), 100vw, var(--size-container-max));
   --size-font: calc(var(--size-container) / (var(--size-container-ideal) / var(--size-unit)));
 }

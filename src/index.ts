@@ -26,6 +26,7 @@ import { initOpenHours } from './modules/open-hours';
 import { initShareLinks } from './modules/share-links';
 import { initStickyCta } from './modules/sticky-cta';
 import { initFormReveal } from './modules/form-reveal';
+import { initLazyVideo } from './modules/lazy-video';
 
 // Each module runs in isolation: one that throws is logged and skipped,
 // and every module after it still initializes.
@@ -73,6 +74,7 @@ function boot() {
   run('share-links', initShareLinks);
   run('form-reveal', initFormReveal);
   run('sticky-cta', initStickyCta);
+  run('lazy-video', initLazyVideo);
   run('style-guide-nav', initStyleGuideNav);
   // Add project feature initializers here: run('<name>', init<Name>);
 }

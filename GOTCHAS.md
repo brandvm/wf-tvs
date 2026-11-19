@@ -25,6 +25,15 @@ collected from client repos into those files.
 
 ## This project
 
+### 2026-11-19 · Images by API get no srcset; a DOM `<img>` takes one
+- Area: mcp
+- Scope: template-candidate
+- Symptom: an Image created by API (and assets uploaded by API) published with no `srcset`: the asset's `variants` stay empty until the image is used in the Designer. `set_attributes srcset` on an Image element fails ("internal error"), as `width`/`height` do. A `<video poster>` can't offer sizes either, so every phone loaded the full landing poster (LCP).
+- Cause: Webflow makes responsive variants in the Designer; `srcset`, `sizes`, `width`, `height` are reserved on Image elements.
+- Fix: build the picture as a DOM element (`data_element_builder` type DOM, `dom_tag: img`) with a class and plain attributes: `src`, `srcset`, `sizes`, `width`, `height`, `alt=""`, `role=presentation`, `loading`, `fetchpriority`; upload your own sizes as assets. On the landing heroes the phone candidate is a portrait crop (560w) chosen through `sizes="(max-width: 767px) 180px, 100vw"`, the video sits on top (`position: absolute` on Landing Hero Video) and has no poster. Rich-text body images: the CMS `content` HTML keeps a `loading="lazy"` written into it.
+- Status: workaround confirmed (landing pages, 2026-11-19)
+- Found by: claude
+
 ### 2026-11-19 · Loader tests hardcode dev port 3000; a project devPort breaks CI
 - Area: ci
 - Scope: template-candidate

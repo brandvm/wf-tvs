@@ -20,7 +20,8 @@ function loader(release) {
 const js = readFileSync(new URL('../dist/index.js', import.meta.url), 'utf8');
 const css = readFileSync(new URL('../dist/styles.css', import.meta.url), 'utf8');
 const stage = `https://${org}.github.io/${repo}/`;
-const local = 'http://localhost:3000/';
+// Client repos set their own dev port (new-project writes it into loader.html), so read it back too.
+const local = source.match(/var DEV = "(http:\/\/localhost:\d+\/)"/)[1];
 const release = `https://cdn.jsdelivr.net/gh/${org}/${repo}@1.0.0/dist/`;
 
 async function setup(page, {

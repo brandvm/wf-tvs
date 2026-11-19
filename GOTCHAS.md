@@ -25,6 +25,15 @@ collected from client repos into those files.
 
 ## This project
 
+### 2026-11-19 · Loader tests hardcode dev port 3000; a project devPort breaks CI
+- Area: ci
+- Scope: template-candidate
+- Symptom: after loader.html (with DEV = localhost:3855 from `pnpm new-project`) was committed, five tests in tests/loader.spec.mjs failed in CI ("Expected http://localhost:3000/index.js") and staging stopped deploying.
+- Cause: the test set `const local = 'http://localhost:3000/'` while new-project writes the project's devPort into loader.html.
+- Fix: the test reads the port back from loader.html (`var DEV = "…"`), as it already does for OWNER and SITE. webflow-build.config.json is committed too.
+- Status: fixed
+- Found by: claude
+
 ### 2026-11-17 · Sort on a new static-page list works when source and sort are written in ONE call
 - Area: mcp
 - Scope: template-candidate

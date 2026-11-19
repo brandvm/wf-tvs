@@ -6,7 +6,7 @@
 // with data-review-modal-photo / -text / -avatar / -name / -place slots and
 // a data-review-modal-close button. Native <dialog>: top layer, focus trap,
 // Escape closes; a click on the backdrop closes; focus goes back to the
-// card; the page stops scrolling while it is open (scroll:lock, as the call
+// control that opened it; the page stops scrolling while it is open (scroll:lock, as the call
 // chooser does).
 export function initReviewModal() {
   const modal = document.querySelector<HTMLDialogElement>('[data-review-modal]');
@@ -28,7 +28,7 @@ export function initReviewModal() {
     slot('text')!.innerHTML = card.querySelector('.review-card-text')?.innerHTML ?? '';
     slot('name')!.textContent = name;
     slot('place')!.textContent = card.querySelector('.review-author-place')?.textContent ?? '';
-    opener = card;
+    opener = card.querySelector<HTMLElement>('[role="button"]') ?? card;
     modal.showModal();
     lock(true);
   };
@@ -37,13 +37,18 @@ export function initReviewModal() {
   modal.addEventListener('click', (event) => { if (event.target === modal) modal.close(); });
   slot('close')?.addEventListener('click', () => modal.close());
   cards.forEach((card) => {
-    card.setAttribute('role', 'button');
-    card.setAttribute('tabindex', '0');
-    card.setAttribute('aria-haspopup', 'dialog');
+    // The whole card opens the review on click. The keyboard control is the
+    // card's "Read full review" pill when it has one: a card is a CMS list
+    // item (role listitem), which may not itself be a button (Lighthouse
+    // aria-required-children, 2026-11-19).
+    const control = card.querySelector<HTMLElement>('[data-review-open-control], .review-card-more') ?? card;
+    control.setAttribute('role', 'button');
+    control.setAttribute('tabindex', '0');
+    control.setAttribute('aria-haspopup', 'dialog');
     const name = card.querySelector('.review-author-name')?.textContent ?? 'this review';
-    card.setAttribute('aria-label', `Read the full review by ${name}`);
+    control.setAttribute('aria-label', `Read the full review by ${name}`);
     card.addEventListener('click', () => open(card));
-    card.addEventListener('keydown', (event) => {
+    control.addEventListener('keydown', (event) => {
       if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); open(card); }
     });
   });

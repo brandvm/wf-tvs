@@ -30,7 +30,8 @@ export function initDatePicker() {
     let cursor = new Date(today);
     panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-label', 'Choose a date');
     const pop = floating(input, panel, { onClose: () => input.setAttribute('aria-expanded', 'false') });
-    input.setAttribute('aria-haspopup', 'dialog'); input.setAttribute('aria-expanded', 'false');
+    // role combobox: aria-expanded is not allowed on a plain text input (Lighthouse aria-allowed-attr).
+    input.setAttribute('role', 'combobox'); input.setAttribute('aria-haspopup', 'dialog'); input.setAttribute('aria-expanded', 'false');
     const pick = (d: Date) => {
       selected = d; cursor = new Date(d);
       input.value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;

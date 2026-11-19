@@ -32,7 +32,8 @@
     "wf:overflow": "node .claude/skills/webflow-build/scripts/overflow.mjs",
     "wf:tracking": "node .claude/skills/webflow-build/scripts/tracking.mjs",
     "wf:redirects": "node .claude/skills/webflow-build/scripts/redirects.mjs",
-    "wf:domain": "node .claude/skills/webflow-build/scripts/domain.mjs"
+    "wf:domain": "node .claude/skills/webflow-build/scripts/domain.mjs",
+    "remixicon": "node scripts/remixicon.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.63.0",

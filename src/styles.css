@@ -42,9 +42,11 @@
 
 /* repo-css: third-party — Remix Icon 4.9.1 (package `remixicon`, Remix Icon
    License 1.0), the icon set the Figma layers use: an icon is
-   <i class="ri-<name>">. Only the woff2 is bundled (build.mjs keeps the
-   other formats external; no current browser requests them). */
-@import "remixicon/fonts/remixicon.css";
+   <i class="ri-<name>">. Only the icons the site uses, written by
+   `pnpm remixicon` from remixicon.icons (2026-11-19, performance: the full
+   set was 137 KB of render-blocking CSS). A new icon needs its name added
+   there. The style guide's Icons page loads the full set from its head. */
+@import "./remixicon-subset.css";
 
 /* ============================================================
    01. TOKENS
@@ -664,6 +666,23 @@ html.lenis body {
   border-top-right-radius: 0;
 }
 [data-form-reveal-ready] .clinic-form-head { display: none; }
+
+/* Before form-reveal runs, keep the landing form closed below 992px when
+   JavaScript is on (Webflow adds .w-mod-js in <head>, before first paint),
+   so the page doesn't load open and then jump shut (Lighthouse CLS 0.28 on
+   mobile, 2026-11-19). Without JavaScript the form stays open. */
+@media screen and (max-width: 991px) {
+  .w-mod-js [data-form-reveal] .landing-form-toggle { display: flex; }
+  .w-mod-js [data-form-reveal]:not(.is-open) [data-form-reveal-panel] {
+    height: 0;
+    overflow: hidden;
+  }
+  .w-mod-js [data-form-reveal] .clinic-form.is-card {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+  .w-mod-js [data-form-reveal] .clinic-form-head { display: none; }
+}
 
 /* repo-css: designer-cant — :has() and env(): keep the footer's last lines
    clear of the fixed landing bar (padding inside the navy footer), and lift

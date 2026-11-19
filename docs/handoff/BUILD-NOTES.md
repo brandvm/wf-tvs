@@ -91,7 +91,7 @@ hidden rows bound to Hours 1/2 time and days (class Location Status Hours).
 - [ ] Landing pages: the form in two steps (same fields, layout only), only
   if the client wants it; keep live's fields, names and order.
 - [ ] Landing pages: match each H1 to its ad (ask which ads point where).
-- [ ] Blog bodies: 10 more posts have inline images with `loading="auto"` (Lyme, travel certificate, tick removal, allergies, puppy checklist, wellness exam, neutering, kitten checklist, Bordetella, teeth cleaning); set `loading="lazy"` in each post's `content` (done on the spaying post). New posts: Webflow writes `auto`.
+- [x] Blog bodies: every inline post image is `loading="lazy"` (11 posts, 2026-11-19; read back, text unchanged). New posts: Webflow writes `loading="auto"`, so check new posts with images before launch.
 - [ ] Hide the nav's Call/Text icons while the landing action bar shows?
   (they repeat on mobile; decide after seeing it on a phone).
 

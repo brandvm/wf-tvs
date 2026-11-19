@@ -26,7 +26,7 @@ const release = (v) => `https://cdn.jsdelivr.net/gh/${org}/${repo}@${v}/dist/`;
 
 // A page with the loader pieces in it. `pieces` picks which ones are
 // installed (a missing head code is the "config missing" case).
-function load({ host = 'example.webflow.io', search = '', stored = null, denyStorage = false, RELEASE = null, pieces = ['head', 'embed', 'footer'] } = {}) {
+function load({ host = 'example.webflow.io', search = '', stored = null, denyStorage = false, RELEASE = null, pieces = ['head', 'embed', 'footer'], readyState = 'complete' } = {}) {
   const logs = { error: [], warn: [] };
   const timers = [];
   const listeners = {};
@@ -49,6 +49,9 @@ function load({ host = 'example.webflow.io', search = '', stored = null, denySto
     appendChild: (node) => attach(container, node),
   };
   const document = {
+    // 'complete' runs the footer as if the page had loaded (the bundle is
+    // requested at once); 'loading' is a footer met by the parser.
+    readyState,
     documentElement: { classList: { add: (c) => classes.add(c), remove: (c) => classes.delete(c), contains: (c) => classes.has(c) } },
     head: { appendChild: (node) => attach(document.head, node) },
     createElement: el,
@@ -146,6 +149,24 @@ test('storage denied: the URL flag still works and nothing throws', () => {
     assert.ok(h.scripts()[0].src.startsWith(dev ? local : stage));
     assert.deepEqual(h.logs.error, []);
   }
+});
+
+test('the footer defers the bundle until load, or the first tap, and frees the scroll lock', () => {
+  const h = load({ readyState: 'loading' });
+  assert.equal(h.scripts().length, 0, 'nothing requested while the page loads');
+  assert.equal(h.classes.has('is-loading'), false, 'the page scrolls natively meanwhile');
+  assert.equal(h.WFC.source, stage, 'the source is known before the request');
+  h.fire('load');
+  assert.ok(h.scripts()[0].src.startsWith(stage + 'index.js?v='));
+  h.fire('load');
+  assert.equal(h.scripts().length, 1, 'requested once');
+
+  const tap = load({ readyState: 'loading' });
+  tap.fire('pointerdown');
+  assert.equal(tap.scripts().length, 1, 'a first tap before load starts it');
+
+  const dev = load({ readyState: 'loading', search: '?wfc-dev=1' });
+  assert.equal(dev.scripts()[0].src, local + 'index.js', 'dev mode loads at once');
 });
 
 test('missing config: Embed 2b and the footer log an error and load nothing', () => {

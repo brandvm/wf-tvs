@@ -260,6 +260,13 @@ footer is no longer guaranteed to execute first and the bundle can
 find its global undefined.
 
 Rollback = set RELEASE in piece 1 back to the previous tag and publish.
+
+The bundle is requested after the page's `load` event, or at the first
+tap, key or wheel if that comes sooner, never before first paint
+(performance, 2026-11-19: on a phone the 65 KB bundle and its work
+competed with the hero image; mobile LCP). The scroll lock from piece 1
+is released at once, so the page scrolls natively until the bundle boots.
+Dev mode loads at once.
 ============================================================ -->
 <script>
   (function () {
@@ -287,7 +294,23 @@ Rollback = set RELEASE in piece 1 back to the previous tag and publish.
       var s = document.createElement("script");
       s.src = src;
       if (fallback) s.onerror = fallback;
-      document.head.appendChild(s);
+      whenReady(function () { document.head.appendChild(s); });
+    }
+    // Defer the request (see above). Fallbacks run after the first request
+    // failed, so by then the queue is open and they load at once.
+    var ready = C.dev || document.readyState === "complete", queue = [];
+    function whenReady(fn) { ready ? fn() : queue.push(fn); }
+    function go() {
+      if (ready) return;
+      ready = true;
+      while (queue.length) queue.shift()();
+    }
+    if (!ready) {
+      document.documentElement.classList.remove("is-loading");
+      window.addEventListener("load", go);
+      ["pointerdown", "keydown", "wheel", "touchstart"].forEach(function (type) {
+        window.addEventListener(type, go, { once: true, passive: true, capture: true });
+      });
     }
     var v = "?v=" + Date.now();
     if (C.dev)

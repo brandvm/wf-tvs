@@ -289,6 +289,7 @@ collected from client repos into those files.
 - Symptom: `set_attributes` / `set_settings attributes` on the review modal's two images (imported with no asset) failed with "MPS rejected update … [Conflict] … component map"; after `set_image_asset` the call reported success, but `get_attributes` read back empty and the published `<img>` had no attribute. Other images on the page (the dog, `data-rise`) took attributes fine.
 - Cause: unknown; both were Images created by the WHTML importer without an asset inside a `<dialog>` DOM element.
 - Fix: the module also finds those images by class (`review-modal.ts`, `byClass`). For scripts, prefer hooks on a wrapper div over attributes on an Image.
+- Later (2026-11-19): with `scope_component_id` set to the Reviews component, `set_attributes loading="lazy"` on both modal images applied, read back and published (`loading="lazy"` in the HTML; the photo now loads only when the popup opens). Image settings have no loading key, so this attribute is the API route to lazy/eager.
 - Status: workaround confirmed
 - Found by: claude
 

@@ -21,11 +21,23 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// The bundle loads after the page's load event (loader.html, piece 3). When
+// that is late, cards already on screen have been seen: hiding them to fade
+// them in again would blink. They stay as they are; only cards still below
+// the fold reveal. On a quick load the entrance plays as before.
+const LATE_BOOT_MS = 1000;
+
 export function initReveal() {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const late = performance.now() > LATE_BOOT_MS;
+  const seen = (el: HTMLElement) => {
+    const r = el.getBoundingClientRect();
+    return r.top < window.innerHeight && r.bottom > 0 && r.width > 0;
+  };
   document.querySelectorAll<HTMLElement>('[data-reveal-stagger]').forEach((group) => {
     const marked = group.querySelectorAll<HTMLElement>('[data-reveal-item]');
-    const items = marked.length ? Array.from(marked) : (Array.from(group.children) as HTMLElement[]);
+    const all = marked.length ? Array.from(marked) : (Array.from(group.children) as HTMLElement[]);
+    const items = late ? all.filter((el) => !seen(el)) : all;
     if (!items.length) return;
     const num = (value: string | undefined, fallback: number) => {
       const n = parseFloat(value ?? '');

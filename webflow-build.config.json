@@ -1,0 +1,14 @@
+{
+  "prototypeUrl": "http://127.0.0.1:5955",
+  "devPort": 3855,
+  "stagingUrl": "https://wf-tvs.webflow.io",
+  "repoDir": ".",
+  "bundlePattern": "brandvm\\.github\\.io/wf-tvs/(index\\.js|styles\\.css)",
+  "widths": [
+    [1440, 900],
+    [820, 1180],
+    [667, 375],
+    [390, 844]
+  ],
+  "pages": ["/"]
+}

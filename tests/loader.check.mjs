@@ -20,7 +20,8 @@ const scripts = [...source.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) =>
 const cssLink = source.match(/<link\b[^>]*id="wfc-css"[^>]*>/)?.[0];
 const [head, embed, footer] = scripts;
 const stage = `https://${org}.github.io/${repo}/`;
-const local = 'http://localhost:3000/';
+// Client repos set their own dev port (new-project writes it into loader.html), so read it back.
+const local = source.match(/var DEV = "(http:\/\/localhost:\d+\/)"/)[1];
 const release = (v) => `https://cdn.jsdelivr.net/gh/${org}/${repo}@${v}/dist/`;
 
 // A page with the loader pieces in it. `pieces` picks which ones are

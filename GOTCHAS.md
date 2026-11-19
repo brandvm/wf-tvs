@@ -30,7 +30,7 @@ collected from client repos into those files.
 - Scope: template-candidate
 - Symptom: after loader.html (with DEV = localhost:3855 from `pnpm new-project`) was committed, five tests in tests/loader.spec.mjs failed in CI ("Expected http://localhost:3000/index.js") and staging stopped deploying.
 - Cause: the test set `const local = 'http://localhost:3000/'` while new-project writes the project's devPort into loader.html.
-- Fix: the test reads the port back from loader.html (`var DEV = "…"`), as it already does for OWNER and SITE. webflow-build.config.json is committed too.
+- Fix: both loader tests (spec and check) read the port back from loader.html (`var DEV = "…"`), as they already do for OWNER and SITE; webflow-build.config.json and the rest of the new-project output are committed. update-skills.check.mjs's "what's new" test is skipped when CHANGELOG.md is absent (new-project removes it from client repos).
 - Status: fixed
 - Found by: claude
 

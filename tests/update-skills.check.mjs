@@ -79,7 +79,9 @@ test('--skills-only leaves the build and the stylesheet alone', () => {
   assert.ok(pkg.scripts['wf:perf'] && !pkg.scripts.phosphor);
 });
 
-test('lists what\'s new with the steps for this repo, and --notes writes the entries', () => {
+// The notes come from the template's CHANGELOG.md, which new-project removes from client repos.
+const noChangelog = !fs.existsSync(path.join(root, 'CHANGELOG.md')) && 'no CHANGELOG.md in a client repo';
+test('lists what\'s new with the steps for this repo, and --notes writes the entries', { skip: noChangelog }, () => {
   const dir = oldRepo();
   const notes = path.join(dir, 'notes.md');
   const out = run(dir, ['--notes', notes]);

@@ -42,6 +42,7 @@ export function initReviewModal() {
     // item (role listitem), which may not itself be a button (Lighthouse
     // aria-required-children, 2026-11-19).
     const control = card.querySelector<HTMLElement>('[data-review-open-control], .review-card-more') ?? card;
+    control.removeAttribute('aria-hidden'); // the pill is marked decorative in Webflow; as the control it must be exposed
     control.setAttribute('role', 'button');
     control.setAttribute('tabindex', '0');
     control.setAttribute('aria-haspopup', 'dialog');

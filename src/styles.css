@@ -102,7 +102,8 @@
    No scaling on wide screens (the person, 2026-11-18; replaces the
    2026-11-13 bands).
    Tablet and mobile (991px and below): a fixed 1rem; the variables'
-   breakpoint modes do the resizing there. Set ideal/min/max to the design
+   breakpoint modes do the resizing there. Below 375px it scales down
+   with the screen (floor 14px). Set ideal/min/max to the design
    before the prototype (webflow-build › checklists › Before the
    prototype). Don't set
    a body font-size in the Designer: this rule wins and the Designer value
@@ -116,6 +117,13 @@
 }
 @media screen and (max-width: 991px) {
   :root { --size-font: 1rem; }
+}
+/* Small phones (the person, 2026-11-19): below 375px the whole layout
+   scales down with the screen, as if the 375 phone frame were shrunk, so
+   a 320px phone shows the 375 layout instead of wrapping every line.
+   Floor 14px. 375px and up stay at 16px. */
+@media screen and (max-width: 374px) {
+  :root { --size-font: max(14px, calc(100vw / 375 * 16)); }
 }
 body {
   font-size: var(--size-font);

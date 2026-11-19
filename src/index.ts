@@ -24,6 +24,8 @@ import { initContactTabs } from './modules/contact-tabs';
 import { initBlogFilter } from './modules/blog-filter';
 import { initOpenHours } from './modules/open-hours';
 import { initShareLinks } from './modules/share-links';
+import { initStickyCta } from './modules/sticky-cta';
+import { initFormReveal } from './modules/form-reveal';
 
 // Each module runs in isolation: one that throws is logged and skipped,
 // and every module after it still initializes.
@@ -69,6 +71,8 @@ function boot() {
   run('blog-filter', initBlogFilter);
   run('open-hours', initOpenHours);
   run('share-links', initShareLinks);
+  run('form-reveal', initFormReveal);
+  run('sticky-cta', initStickyCta);
   run('style-guide-nav', initStyleGuideNav);
   // Add project feature initializers here: run('<name>', init<Name>);
 }

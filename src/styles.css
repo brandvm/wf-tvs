@@ -636,6 +636,45 @@ html.lenis body {
   background-color: var(--_colors---ink-tint--ink-24, #0808293d);
 }
 
+/* repo-css: js-state — conversion pass 2026-11-19, landing pages.
+   Module open-hours: a closed clinic's landing status dot turns pale.
+   Module sticky-cta: the landing action bar (G | Nav Landing; off screen
+   below 992px in the Designer) slides in with .is-visible.
+   Module form-reveal: below 992px the header card shows only while the
+   module is in charge; open, the button goes, the header and the form card
+   join into one card and the form's own title is not repeated. */
+[data-open-state="closed"] .landing-status-dot {
+  background-color: var(--_colors---paper-tint--paper-48, #ffffff7a);
+}
+
+.landing-action-bar.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+[data-form-reveal-ready] .landing-form-toggle { display: flex; }
+[data-form-reveal-ready].is-open .landing-form-toggle {
+  padding-bottom: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+[data-form-reveal-ready].is-open .landing-form-toggle-button { display: none; }
+[data-form-reveal-ready] .clinic-form.is-card {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+[data-form-reveal-ready] .clinic-form-head { display: none; }
+
+/* repo-css: designer-cant — :has() and env(): keep the footer's last lines
+   clear of the fixed landing bar (padding inside the navy footer), and lift
+   the bar above the iPhone home indicator. */
+@media screen and (max-width: 991px) {
+  body:has([data-sticky-cta]) .g-footer-w {
+    padding-bottom: calc(var(--_layout---button--height, 3em) + 2em);
+  }
+  .landing-action-bar { margin-bottom: env(safe-area-inset-bottom); }
+}
+
 .faq-item.is-open .faq-toggle {
   background-color: var(--_colors---brand--ink, #080829);
   color: var(--_colors---brand--paper, #fff);

@@ -6,6 +6,12 @@
 // while nothing is chosen. A button may carry data-contact-tab-active to be
 // chosen at load; a URL hash matching a panel's id (/contact-us#parliament)
 // chooses that clinic.
+// Conversion (2026-11-19): the clinic is also chosen from ?clinic=<key>
+// (/contact-us?clinic=parliament, for links and ads), or, when the visitor
+// came from another page of this site, from that page's path: a button's
+// data-contact-tab-match (one word or several, comma-separated) is looked
+// for in the previous page's path (/locations/parliament, /parliament-vet).
+// Order: hash, ?clinic, previous page, data-contact-tab-active.
 // The buttons behave as a radio group (role radiogroup/radio, aria-checked,
 // arrow keys move and choose, a roving tabindex). The chosen button gets
 // .is-active; the other panels get `hidden`.
@@ -35,8 +41,21 @@ export function initContactTabs() {
     };
 
     const fromHash = panels.findIndex((panel) => location.hash && `#${panel!.id}` === location.hash);
+    const param = new URLSearchParams(location.search).get('clinic');
+    const fromParam = param ? tabs.findIndex((tab) => tab.dataset.contactTab === param) : -1;
+    let fromReferrer = -1;
+    try {
+      const ref = document.referrer ? new URL(document.referrer) : null;
+      if (ref && ref.origin === location.origin && ref.pathname !== location.pathname) {
+        fromReferrer = tabs.findIndex((tab) =>
+          (tab.dataset.contactTabMatch || '').split(',').map((w) => w.trim()).filter(Boolean).some((w) => ref.pathname.includes(w)),
+        );
+      }
+    } catch {
+      /* no usable referrer */
+    }
     const marked = tabs.findIndex((tab) => tab.hasAttribute('data-contact-tab-active'));
-    select(fromHash >= 0 ? fromHash : marked, false);
+    select([fromHash, fromParam, fromReferrer, marked].find((i) => i >= 0) ?? -1, false);
 
     tabs.forEach((tab, i) => {
       tab.addEventListener('click', () => select(i, false));

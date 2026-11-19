@@ -343,6 +343,7 @@ Breakpoints: 991 (tablet), 767 (mobile landscape), 479 (mobile). Checked at
   the dental page (kept as live); the blog post's "On this page"
   highlight and copy-link share button are not built; author and read
   time are static.
+- 2026-11-19 · Mobile performance (the person: "fix the mobile performance"): Latin font subsets with preloads, Remix icon subset, lazy hero video (≥992px only), WebP CMS images, review popup images lazy, and the bundle requested after `load` or the first tap (loader.html piece 3, installed). Reveal leaves cards already on screen alone when the bundle boots late. Inlining critical CSS was tested and rejected: blocking the repo sheet did not move LCP. Mobile medians 83–93, desktop 95–99; with our JS removed entirely pages reach ~90–92, the rest is Webflow's own CSS, jQuery, webflow.js, Turnstile and the fonts.
 - 2026-11-12 · Documentation examples are live (no `inert`); state tables
   stack below 1280px, so none scrolls sideways.
 - 2026-11-11 · Icons: Remix Icon (the set the Figma layers are named

@@ -306,7 +306,7 @@ const pages = [];
   }
 })('.');
 for (const f of pages.sort()) {
-  for (const [, head, body] of read(f).matchAll(/<!--\s*sg:start\s*([\s\S]*?)-->([\s\S]*?)<!--\s*sg:end\s*-->/g)) specimen(meta(head, f), body);
+  for (const [, head, body] of expand(read(f)).matchAll(/<!--\s*sg:start\s*([\s\S]*?)-->([\s\S]*?)<!--\s*sg:end\s*-->/g)) specimen(meta(head, f), body);
 }
 
 // ---- 1 overview: what the page is, how to use it, the site at a glance
